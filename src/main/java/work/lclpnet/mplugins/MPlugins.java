@@ -1,9 +1,15 @@
 package work.lclpnet.mplugins;
 
+import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import work.lclpnet.mplugins.cmd.PluginsCommand;
 import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.mplugins.config.ConfigService;
 
@@ -34,6 +40,16 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 		LOGGER.info("Loading plugins...");
 		pluginFrame.init();
 		LOGGER.info("Plugins have been loaded.");
+
+		CommandRegistrationCallback.EVENT.register(this::registerCommands);
+	}
+
+	private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher,
+								  CommandRegistryAccess registryAccess,
+								  CommandManager.RegistrationEnvironment environment) {
+
+		var pluginManager = pluginFrame.getPluginManager();
+		new PluginsCommand(pluginManager).register(dispatcher);
 	}
 
 	private void createPluginFrame() {
