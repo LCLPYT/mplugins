@@ -1,36 +1,26 @@
 {
 	"schemaVersion": 1,
-	"id": "testmod",
+	"id": "mplugins",
 	"version": "${version}",
-	"name": "Test Mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "MPlugins",
+	"description": "Integration of plugins4j into the fabric mod loader.",
 	"authors": [
-		"Me!"
+		"LCLP"
 	],
 	"contact": {
-		"homepage": "https://github.com/LCLPYT/fabric-mod-boilerplate",
-		"sources": "https://github.com/LCLPYT/fabric-mod-boilerplate"
+		"homepage": "https://github.com/LCLPYT/mplugins",
+		"sources": "https://github.com/LCLPYT/mplugins"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/testmod/icon.png",
+	"license": "MIT",
+	"icon": "assets/mplugins/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
-		],
-		"client": [
-			"com.example.ExampleModClient"
-		],
-		"fabric-datagen": [
-			"com.example.ExampleModDataGenerator"
+			"work.lclpnet.mplugins.MPlugins"
 		]
 	},
 	"mixins": [
-		"testmod.mixins.json",
-		{
-			"config": "testmod.client.mixins.json",
-			"environment": "client"
-		}
+		"mplugins.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.14.14",
