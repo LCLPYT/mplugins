@@ -11,16 +11,23 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public class MPlugins implements ModInitializer {
+public class MPlugins implements ModInitializer, MPluginsAPI {
 
 	public static final String MOD_ID = "mplugins";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	private static final Object mutex = new Object();
+	private static MPlugins instance = null;
 
 	private Config config = null;
 	private PluginFrame pluginFrame = null;
 
 	@Override
 	public void onInitialize() {
+		synchronized (mutex) {
+			if (instance != null) return;
+			instance = this;
+		}
+
 		loadConfig();
 		createPluginFrame();
 
@@ -42,6 +49,22 @@ public class MPlugins implements ModInitializer {
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to load the config", e);
 		}
+	}
+
+	@Override
+	public PluginFrame getPluginFrame() {
+		return pluginFrame;
+	}
+
+	@Override
+	public Config getConfig() {
+		return config;
+	}
+
+	public static MPluginsAPI getAPI() {
+		if (instance == null) throw new IllegalStateException("Mod not initialized");
+
+		return instance;
 	}
 
 	public static Identifier identifier(String path) {
