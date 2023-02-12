@@ -30,8 +30,12 @@ dependencies {
 
     /* other Java dependencies */
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
     implementation 'org.json:json:20220924'
+    include 'org.json:json:20220924'
+
     implementation "work.lclpnet:plugins4j:${project.plugins4j_version}"
+    include "work.lclpnet:plugins4j:${project.plugins4j_version}"
 
     /* testing */
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
