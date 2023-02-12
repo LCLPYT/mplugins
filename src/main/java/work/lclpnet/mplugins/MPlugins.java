@@ -38,9 +38,7 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 		loadConfig();
 		createPluginFrame();
 
-		LOGGER.info("Loading plugins...");
 		pluginFrame.init();
-		LOGGER.info("Plugins have been loaded.");
 
 		CommandRegistrationCallback.EVENT.register(this::registerCommands);
 	}
