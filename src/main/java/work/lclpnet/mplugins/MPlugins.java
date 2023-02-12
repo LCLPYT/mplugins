@@ -9,6 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import work.lclpnet.mplugins.cmd.PluginSuggestions;
 import work.lclpnet.mplugins.cmd.PluginsCommand;
 import work.lclpnet.mplugins.cmd.ReloadCommand;
 import work.lclpnet.mplugins.config.Config;
@@ -49,7 +50,9 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 								  CommandRegistryAccess registryAccess,
 								  CommandManager.RegistrationEnvironment environment) {
 
-		var pluginManager = pluginFrame.getPluginManager();
+		final var pluginManager = pluginFrame.getPluginManager();
+
+		PluginSuggestions.init(pluginManager);
 
 		new PluginsCommand(pluginManager).register(dispatcher);
 		new ReloadCommand(pluginManager).register(dispatcher);

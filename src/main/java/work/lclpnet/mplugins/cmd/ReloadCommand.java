@@ -29,6 +29,7 @@ public class ReloadCommand {
                 .requires(s -> s.hasPermissionLevel(4))
                 .executes(this::reloadPlugins)
                 .then(argument("plugin", StringArgumentType.string())
+                        .suggests(PluginSuggestions.getLoadedPluginProvider())
                         .executes(this::reloadPlugin)
                 );
     }
@@ -48,7 +49,7 @@ public class ReloadCommand {
 
         pluginManager.reloadPlugin(plugin.get());
 
-        src.sendMessage(Text.literal("Plugins '%s' reloaded.".formatted(pluginId)));
+        src.sendMessage(Text.literal("Plugin '%s' reloaded.".formatted(pluginId)));
 
         return 1;
     }
