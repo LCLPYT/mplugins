@@ -6,13 +6,18 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConfigTest {
 
     private static final String json = """
             {
-              "pluginDirectory": "plugins"
+              "pluginDirectory": "plugins",
+              "commands": {
+                "enableLoadCommand": true,
+                "enableUnloadCommand": true
+              }
             }
             """.trim();
 
@@ -21,6 +26,8 @@ class ConfigTest {
         var config = new Config(new JSONObject(json));
 
         assertEquals(Path.of("plugins"), config.pluginDirectory);
+        assertTrue(config.enableLoadCommand);
+        assertTrue(config.enableUnloadCommand);
     }
 
     @Test
@@ -31,6 +38,8 @@ class ConfigTest {
         var expected = new JSONObject(json);
 
         assertBoth(expected, serialized, x -> x.getString("pluginDirectory"));
+        assertBoth(expected, serialized, x -> x.getJSONObject("commands").getBoolean("enableLoadCommand"));
+        assertBoth(expected, serialized, x -> x.getJSONObject("commands").getBoolean("enableUnloadCommand"));
     }
 
     private static <T> void assertBoth(T expected, T actual, Function<T, Object> getter) {

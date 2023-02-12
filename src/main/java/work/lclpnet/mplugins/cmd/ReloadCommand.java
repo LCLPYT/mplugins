@@ -29,27 +29,24 @@ public class ReloadCommand {
                 .requires(s -> s.hasPermissionLevel(4))
                 .executes(this::reloadPlugins)
                 .then(argument("plugin", StringArgumentType.string())
-                        .suggests(PluginSuggestions.getLoadedPluginProvider())
+                        .suggests(PluginSuggestions.loadedPluginProvider())
                         .executes(this::reloadPlugin)
                 );
     }
 
     private Integer reloadPlugin(CommandContext<ServerCommandSource> ctx) {
-        var pluginId = StringArgumentType.getString(ctx, "plugin");
+        var optPlugin = PluginCommandUtils.getLoadedPluginArgument(ctx, pluginManager);
+        if (optPlugin.isEmpty()) return -1;
 
-        ServerCommandSource src = ctx.getSource();
+        var src = ctx.getSource();
+        var plugin = optPlugin.get();
+        var id = plugin.getId();
 
-        var plugin = pluginManager.getPlugin(pluginId);
-        if (plugin.isEmpty()) {
-            src.sendError(Text.literal("There is no loaded plugin with id '%s'.".formatted(pluginId)));
-            return -1;
-        }
+        src.sendMessage(Text.literal("Reloading plugin '%s'...".formatted(id)));
 
-        src.sendMessage(Text.literal("Reloading plugin '%s'...".formatted(pluginId)));
+        pluginManager.reloadPlugin(plugin);
 
-        pluginManager.reloadPlugin(plugin.get());
-
-        src.sendMessage(Text.literal("Plugin '%s' reloaded.".formatted(pluginId)));
+        src.sendMessage(Text.literal("Plugin '%s' reloaded.".formatted(id)));
 
         return 1;
     }

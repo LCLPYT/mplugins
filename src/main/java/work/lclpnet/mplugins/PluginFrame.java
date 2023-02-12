@@ -1,12 +1,15 @@
 package work.lclpnet.mplugins;
 
 import org.slf4j.Logger;
+import work.lclpnet.mplugins.ext.FabricPlugin;
 import work.lclpnet.plugin.DistinctPluginContainer;
 import work.lclpnet.plugin.PluginManager;
 import work.lclpnet.plugin.SimplePluginManager;
 import work.lclpnet.plugin.bootstrap.OrderedPluginBootstrap;
 import work.lclpnet.plugin.discover.DirectoryPluginDiscoveryService;
+import work.lclpnet.plugin.discover.PluginDiscoveryService;
 import work.lclpnet.plugin.load.DefaultClassLoaderContainer;
+import work.lclpnet.plugin.load.LoadedPlugin;
 import work.lclpnet.plugin.manifest.JsonManifestLoader;
 
 import javax.annotation.Nullable;
@@ -22,6 +25,8 @@ public class PluginFrame {
     private DefaultClassLoaderContainer clContainer = null;
     @Nullable
     private PluginManager pluginManager = null;
+    @Nullable
+    private PluginDiscoveryService discoveryService = null;
 
     public PluginFrame(Path pluginDirectory, Logger logger) {
         this.pluginDirectory = pluginDirectory;
@@ -35,11 +40,11 @@ public class PluginFrame {
 
         clContainer = new DefaultClassLoaderContainer();
 
-        var discovery = new DirectoryPluginDiscoveryService(
+        discoveryService = new DirectoryPluginDiscoveryService(
                 pluginDirectory, new JsonManifestLoader(), clContainer, logger
         );
         var container = new DistinctPluginContainer(logger);
-        var bootstrap = new OrderedPluginBootstrap(discovery, container);
+        var bootstrap = new OrderedPluginBootstrap(discoveryService, container);
 
         try {
             bootstrap.loadPlugins();
@@ -47,7 +52,7 @@ public class PluginFrame {
             throw new RuntimeException("Plugin bootstrap failed", e);
         }
 
-        pluginManager = new SimplePluginManager(discovery, container);
+        pluginManager = new SimplePluginManager(discoveryService, container);
     }
 
     private void ensurePluginDirectoryExists() {
@@ -60,14 +65,37 @@ public class PluginFrame {
         }
     }
 
+    public Path getPluginDirectory() {
+        return pluginDirectory;
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
     public PluginManager getPluginManager() {
-        if (pluginManager == null)
-            throw new IllegalStateException("Plugin Frame is not initialized");
+        if (pluginManager == null) notInitialized();
 
         return pluginManager;
     }
 
+    public PluginDiscoveryService getDiscoveryService() {
+        if (discoveryService == null) notInitialized();
+
+        return discoveryService;
+    }
+
     private void shutdown() {
         if (clContainer != null) clContainer.close();
+    }
+
+    private static void notInitialized() {
+        throw new IllegalStateException("Plugin Frame is not initialized");
+    }
+
+    public static void enablePlugin(LoadedPlugin loadedPlugin) {
+        if (loadedPlugin.getPlugin() instanceof FabricPlugin fabricPlugin) {
+            fabricPlugin.onReady();
+        }
     }
 }

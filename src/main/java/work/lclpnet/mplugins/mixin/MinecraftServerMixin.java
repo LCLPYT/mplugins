@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import work.lclpnet.mplugins.MPlugins;
-import work.lclpnet.mplugins.ext.FabricPlugin;
+import work.lclpnet.mplugins.PluginFrame;
 
 @Mixin(MinecraftDedicatedServer.class)
 public class MinecraftServerMixin {
@@ -20,12 +20,11 @@ public class MinecraftServerMixin {
 			method = "setupServer"
 	)
 	private void mplugins$afterWorldLoad(CallbackInfoReturnable<Boolean> cir) {
-		var pluginManager = MPlugins.getAPI().getPluginFrame().getPluginManager();
+		var api = MPlugins.getAPI();
+		var pluginManager = api.getPluginFrame().getPluginManager();
 
-		pluginManager.getPlugins().forEach(loadedPlugin -> {
-			if (loadedPlugin.getPlugin() instanceof FabricPlugin fabricPlugin) {
-				fabricPlugin.onReady();
-			}
-		});
+		api.setReady(true);
+
+		pluginManager.getPlugins().forEach(PluginFrame::enablePlugin);
 	}
 }

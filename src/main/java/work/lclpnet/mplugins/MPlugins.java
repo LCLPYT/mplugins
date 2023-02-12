@@ -9,9 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import work.lclpnet.mplugins.cmd.PluginSuggestions;
-import work.lclpnet.mplugins.cmd.PluginsCommand;
-import work.lclpnet.mplugins.cmd.ReloadCommand;
+import work.lclpnet.mplugins.cmd.*;
 import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.mplugins.config.ConfigService;
 
@@ -28,6 +26,7 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 
 	private Config config = null;
 	private PluginFrame pluginFrame = null;
+	private volatile boolean ready = false;
 
 	@Override
 	public void onInitialize() {
@@ -50,12 +49,15 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 								  CommandRegistryAccess registryAccess,
 								  CommandManager.RegistrationEnvironment environment) {
 
-		final var pluginManager = pluginFrame.getPluginManager();
+		PluginSuggestions.init(pluginFrame);
 
-		PluginSuggestions.init(pluginManager);
+		final var pluginManager = pluginFrame.getPluginManager();
 
 		new PluginsCommand(pluginManager).register(dispatcher);
 		new ReloadCommand(pluginManager).register(dispatcher);
+
+		if (config.enableLoadCommand) new LoadCommand(pluginManager).register(dispatcher);
+		if (config.enableUnloadCommand) new UnloadCommand(pluginManager).register(dispatcher);
 	}
 
 	private void createPluginFrame() {
@@ -81,6 +83,16 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 	@Override
 	public Config getConfig() {
 		return config;
+	}
+
+	@Override
+	public boolean isReady() {
+		return ready;
+	}
+
+	@Override
+	public void setReady(boolean ready) {
+		this.ready = ready;
 	}
 
 	public static MPluginsAPI getAPI() {
