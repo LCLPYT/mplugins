@@ -8,7 +8,7 @@ public interface MPluginsAPI {
 
     PluginFrame getPluginFrame();
 
-    boolean isReady();
+    boolean isWorldReady();
 
-    void setReady(boolean ready);
+    void setWorldReady(boolean ready);
 }

@@ -6,10 +6,10 @@ import net.minecraft.MinecraftVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import work.lclpnet.mplugins.MPlugins;
-import work.lclpnet.mplugins.ext.FabricPlugin;
+import work.lclpnet.mplugins.ext.WorldStateListener;
 import work.lclpnet.plugin.Plugin;
 
-public class TestPlugin implements Plugin, FabricPlugin {
+public class TestPlugin implements Plugin, WorldStateListener {
 
     public static final String ID = "testPlugin";
     private static final Logger LOGGER = LoggerFactory.getLogger(ID);
@@ -20,7 +20,8 @@ public class TestPlugin implements Plugin, FabricPlugin {
     }
 
     @Override
-    public void onReady() {
+    public void onWorldReady() {
+        // world is loaded
         LOGGER.info("Test plugin is ready.");
 
         // full access to Minecraft, Fabric and MPlugins
@@ -29,6 +30,12 @@ public class TestPlugin implements Plugin, FabricPlugin {
 
         LOGGER.info("Running Minecraft {} with Fabric {} and mplugins {}",
                 MinecraftVersion.CURRENT.getName(), FabricLoaderImpl.VERSION, mplugins.getMetadata().getVersion());
+    }
+
+    @Override
+    public void onWorldUnready() {
+        // world is going to unload
+        LOGGER.info("Test plugin is unready.");
     }
 
     @Override

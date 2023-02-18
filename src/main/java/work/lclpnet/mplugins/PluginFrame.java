@@ -1,7 +1,6 @@
 package work.lclpnet.mplugins;
 
 import org.slf4j.Logger;
-import work.lclpnet.mplugins.ext.FabricPlugin;
 import work.lclpnet.plugin.DistinctPluginContainer;
 import work.lclpnet.plugin.PluginManager;
 import work.lclpnet.plugin.SimplePluginManager;
@@ -9,7 +8,6 @@ import work.lclpnet.plugin.bootstrap.OrderedPluginBootstrap;
 import work.lclpnet.plugin.discover.DirectoryPluginDiscoveryService;
 import work.lclpnet.plugin.discover.PluginDiscoveryService;
 import work.lclpnet.plugin.load.DefaultClassLoaderContainer;
-import work.lclpnet.plugin.load.LoadedPlugin;
 import work.lclpnet.plugin.manifest.JsonManifestLoader;
 
 import javax.annotation.Nullable;
@@ -91,11 +89,5 @@ public class PluginFrame {
 
     private static void notInitialized() {
         throw new IllegalStateException("Plugin Frame is not initialized");
-    }
-
-    public static void enablePlugin(LoadedPlugin loadedPlugin) {
-        if (loadedPlugin.getPlugin() instanceof FabricPlugin fabricPlugin) {
-            fabricPlugin.onReady();
-        }
     }
 }

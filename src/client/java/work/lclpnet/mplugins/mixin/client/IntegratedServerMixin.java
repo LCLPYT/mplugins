@@ -1,4 +1,4 @@
-package work.lclpnet.mplugins.mixin;
+package work.lclpnet.mplugins.mixin.client;
 
 import net.minecraft.server.integrated.IntegratedServer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import work.lclpnet.mplugins.MPlugins;
-import work.lclpnet.mplugins.PluginFrame;
+import work.lclpnet.mplugins.ext.MPluginExt;
 
 @Mixin(IntegratedServer.class)
 public class IntegratedServerMixin {
@@ -20,11 +20,12 @@ public class IntegratedServerMixin {
 			method = "setupServer"
 	)
 	private void mplugins$afterWorldLoad(CallbackInfoReturnable<Boolean> cir) {
+		// call world ready on all loaded plugins
 		var api = MPlugins.getAPI();
 		var pluginManager = api.getPluginFrame().getPluginManager();
 
-		api.setReady(true);
+		api.setWorldReady(true);
 
-		pluginManager.getPlugins().forEach(PluginFrame::enablePlugin);
+		pluginManager.getPlugins().forEach(MPluginExt::callWorldReady);
 	}
 }

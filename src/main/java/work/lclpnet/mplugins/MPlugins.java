@@ -26,7 +26,7 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 
 	private Config config = null;
 	private PluginFrame pluginFrame = null;
-	private volatile boolean ready = false;
+	private volatile boolean worldReady = false;
 
 	@Override
 	public void onInitialize() {
@@ -84,13 +84,13 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 	}
 
 	@Override
-	public boolean isReady() {
-		return ready;
+	public boolean isWorldReady() {
+		return worldReady;
 	}
 
 	@Override
-	public void setReady(boolean ready) {
-		this.ready = ready;
+	public void setWorldReady(boolean ready) {
+		this.worldReady = ready;
 	}
 
 	public static MPluginsAPI getAPI() {

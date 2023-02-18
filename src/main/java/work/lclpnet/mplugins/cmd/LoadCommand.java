@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import work.lclpnet.mplugins.MPlugins;
-import work.lclpnet.mplugins.PluginFrame;
+import work.lclpnet.mplugins.ext.MPluginExt;
 import work.lclpnet.plugin.PluginManager;
 import work.lclpnet.plugin.load.LoadedPlugin;
 import work.lclpnet.plugin.load.PluginLoadException;
@@ -53,8 +53,8 @@ public class LoadCommand {
             return -1;
         }
 
-        if (MPlugins.getAPI().isReady()) {
-            PluginFrame.enablePlugin(loaded);
+        if (MPlugins.getAPI().isWorldReady()) {
+            MPluginExt.callWorldReady(loaded);
         }
 
         src.sendMessage(Text.literal("Plugin '%s' loaded.".formatted(loaded.getId())));
