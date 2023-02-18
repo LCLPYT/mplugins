@@ -21,8 +21,9 @@ public class MinecraftServerMixin {
     )
     private void mplugins$beforeGetNetworkIo(CallbackInfo ci) {
         var api = MPlugins.getAPI();
-        var pluginManager = api.getPluginFrame().getPluginManager();
+        api.setReady(false);
 
+        var pluginManager = api.getPluginFrame().getPluginManager();
         pluginManager.shutdown();
     }
 }

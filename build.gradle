@@ -13,6 +13,20 @@ archivesBaseName = project.archives_base_name
 version = gitVersion.call()
 group = project.maven_group
 
+sourceSets {
+    testPlugin {
+        java {
+            compileClasspath += main.output + main.compileClasspath
+            runtimeClasspath += main.output + main.runtimeClasspath
+        }
+    }
+}
+
+configurations {
+    testPluginImplementation.extendsFrom(implementation)
+    testPluginRuntimeOnly.extendsFrom(runtimeOnly)
+}
+
 repositories {
     mavenCentral()
 
@@ -67,6 +81,16 @@ jar {
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}
+}
+
+task testPluginJar(type: Jar) {
+    from sourceSets.testPlugin.output
+    archiveVersion.set(project.version.toString())
+    archiveBaseName.set('testPlugin')
+}
+
+artifacts {
+    archives testPluginJar
 }
 
 // configure the maven publication
