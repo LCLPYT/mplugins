@@ -2,7 +2,7 @@ package work.lclpnet.mplugins;
 
 import org.slf4j.Logger;
 import work.lclpnet.mplugins.ext.fabric.FabricJsonManifestLoader;
-import work.lclpnet.plugin.DistinctPluginContainer;
+import work.lclpnet.mplugins.ext.fabric.FabricPluginContainer;
 import work.lclpnet.plugin.PluginManager;
 import work.lclpnet.plugin.SimplePluginManager;
 import work.lclpnet.plugin.bootstrap.OrderedPluginBootstrap;
@@ -41,7 +41,7 @@ public class PluginFrame {
         discoveryService = new DirectoryPluginDiscoveryService(
                 pluginDirectory, new FabricJsonManifestLoader(), clContainer, logger
         );
-        var container = new DistinctPluginContainer(logger);
+        var container = new FabricPluginContainer(logger);
         var bootstrap = new OrderedPluginBootstrap(discoveryService, container);
 
         try {

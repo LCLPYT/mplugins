@@ -1,10 +1,11 @@
 {
-  "version": "1",
+  "schemaVersion": 1,
+  "version": "0.1.0-SNAPSHOT",
   "id": "testPlugin",
   "entry": "work.lclpnet.test.TestPlugin",
   "dependsOn": [],
   "fabric": {
-    "env": ["client", "server"],
+    "env": ["client", "server", "whatisdis?"],
     "requires": ["fabric-api"]
   }
 }

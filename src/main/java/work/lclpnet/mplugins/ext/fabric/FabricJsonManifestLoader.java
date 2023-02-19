@@ -15,22 +15,29 @@ public class FabricJsonManifestLoader extends JsonManifestLoader {
 
     @Override
     public PluginManifest loadFromJson(JSONObject obj) {
-        var base = (BasePluginManifest) super.loadFromJson(obj);
+        final var base = (BasePluginManifest) super.loadFromJson(obj);
 
-        var validEnvTypes = Arrays.stream(EnvType.values())
+        final var validEnvTypes = Arrays.stream(EnvType.values())
                 .map(EnvType::name)
                 .map(String::toLowerCase)
                 .toList();
 
-        optional(obj, "env", array(x -> x instanceof String && validEnvTypes.contains(x)));
-        var env = obj.has("env") ? stream(obj.getJSONArray("env"))
-                .map(String::valueOf)
-                .collect(Collectors.toUnmodifiableSet()) : Set.copyOf(validEnvTypes);
+        Set<String> env = Set.copyOf(validEnvTypes);
+        Set<String> requires = Collections.emptySet();
 
-        optional(obj, "requires", array(x -> x instanceof String));
-        var requires = obj.has("requires") ? stream(obj.getJSONArray("requires"))
-                .map(String::valueOf)
-                .collect(Collectors.toUnmodifiableSet()) : Collections.<String>emptySet();
+        if (obj.has("fabric")) {
+            var fabric = obj.getJSONObject("fabric");
+
+            optional(fabric, "env", array(x -> x instanceof String && validEnvTypes.contains(x)));
+            env = fabric.has("env") ? stream(fabric.getJSONArray("env"))
+                    .map(String::valueOf)
+                    .collect(Collectors.toUnmodifiableSet()) : Set.copyOf(validEnvTypes);
+
+            optional(fabric, "requires", array(x -> x instanceof String));
+            requires = fabric.has("requires") ? stream(fabric.getJSONArray("requires"))
+                    .map(String::valueOf)
+                    .collect(Collectors.toUnmodifiableSet()) : Collections.emptySet();
+        }
 
         return new FabricPluginManifest(base, env, requires);
     }

@@ -37,11 +37,11 @@ public class FabricPluginManifest implements PluginManifest {
         return base.dependsOn();
     }
 
-    public Set<String> getEnv() {
+    public Set<String> env() {
         return env;
     }
 
-    public Set<String> getRequires() {
+    public Set<String> requires() {
         return requires;
     }
 }
