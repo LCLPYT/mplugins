@@ -1,0 +1,10 @@
+{
+  "version": "1",
+  "id": "testPlugin",
+  "entry": "work.lclpnet.test.TestPlugin",
+  "dependsOn": [],
+  "fabric": {
+    "env": ["client", "server"],
+    "requires": ["fabric-api"]
+  }
+}

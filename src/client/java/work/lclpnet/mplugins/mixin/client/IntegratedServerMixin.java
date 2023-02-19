@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import work.lclpnet.mplugins.MPlugins;
-import work.lclpnet.mplugins.ext.MPluginExt;
+import work.lclpnet.mplugins.ext.MPluginLib;
 
 @Mixin(IntegratedServer.class)
 public class IntegratedServerMixin {
@@ -26,6 +26,6 @@ public class IntegratedServerMixin {
 
 		api.setWorldReady(true);
 
-		pluginManager.getPlugins().forEach(MPluginExt::callWorldReady);
+		pluginManager.getPlugins().forEach(MPluginLib::callWorldReady);
 	}
 }

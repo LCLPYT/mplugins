@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import work.lclpnet.mplugins.MPlugins;
-import work.lclpnet.mplugins.ext.MPluginExt;
+import work.lclpnet.mplugins.ext.MPluginLib;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
@@ -29,7 +29,7 @@ public abstract class MinecraftServerMixin {
         api.setWorldReady(false);
 
         var pluginManager = api.getPluginFrame().getPluginManager();
-        pluginManager.getPlugins().forEach(MPluginExt::callWorldUnready);
+        pluginManager.getPlugins().forEach(MPluginLib::callWorldUnready);
 
         // plugins should only be unloaded on dedicated servers here. on clients unload at client shutdown.
         if (this.isDedicated()) {

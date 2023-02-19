@@ -1,6 +1,7 @@
 package work.lclpnet.mplugins;
 
 import org.slf4j.Logger;
+import work.lclpnet.mplugins.ext.fabric.FabricJsonManifestLoader;
 import work.lclpnet.plugin.DistinctPluginContainer;
 import work.lclpnet.plugin.PluginManager;
 import work.lclpnet.plugin.SimplePluginManager;
@@ -8,7 +9,6 @@ import work.lclpnet.plugin.bootstrap.OrderedPluginBootstrap;
 import work.lclpnet.plugin.discover.DirectoryPluginDiscoveryService;
 import work.lclpnet.plugin.discover.PluginDiscoveryService;
 import work.lclpnet.plugin.load.DefaultClassLoaderContainer;
-import work.lclpnet.plugin.manifest.JsonManifestLoader;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class PluginFrame {
         clContainer = new DefaultClassLoaderContainer();
 
         discoveryService = new DirectoryPluginDiscoveryService(
-                pluginDirectory, new JsonManifestLoader(), clContainer, logger
+                pluginDirectory, new FabricJsonManifestLoader(), clContainer, logger
         );
         var container = new DistinctPluginContainer(logger);
         var bootstrap = new OrderedPluginBootstrap(discoveryService, container);

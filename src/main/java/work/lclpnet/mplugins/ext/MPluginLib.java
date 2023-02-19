@@ -2,7 +2,7 @@ package work.lclpnet.mplugins.ext;
 
 import work.lclpnet.plugin.load.LoadedPlugin;
 
-public class MPluginExt {
+public class MPluginLib {
 
     public static void callWorldReady(LoadedPlugin loadedPlugin) {
         if (loadedPlugin.getPlugin() instanceof WorldStateListener worldStateListener) {
