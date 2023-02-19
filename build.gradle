@@ -75,6 +75,14 @@ processResources {
 	}
 }
 
+processTestPluginResources {
+    inputs.property "version", project.version
+
+    filesMatching("plugin.json") {
+        expand "version": project.version
+    }
+}
+
 tasks.withType(JavaCompile).configureEach {
 	it.options.release = 17
 }

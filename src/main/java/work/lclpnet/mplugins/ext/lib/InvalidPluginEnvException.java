@@ -1,4 +1,4 @@
-package work.lclpnet.mplugins.ext.fabric;
+package work.lclpnet.mplugins.ext.lib;
 
 import work.lclpnet.plugin.load.PluginLoadException;
 

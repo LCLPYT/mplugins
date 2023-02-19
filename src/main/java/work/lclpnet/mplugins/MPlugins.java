@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import work.lclpnet.mplugins.cmd.*;
 import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.mplugins.config.ConfigService;
+import work.lclpnet.mplugins.hook.builtin.PluginLifecycleHooks;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -85,12 +86,20 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 
 	@Override
 	public boolean isWorldReady() {
-		return worldReady;
+		synchronized (mutex) {
+			return worldReady;
+		}
 	}
 
 	@Override
 	public void setWorldReady(boolean ready) {
-		this.worldReady = ready;
+		synchronized (mutex) {
+			if (this.worldReady != ready) {
+				this.worldReady = ready;
+
+				PluginLifecycleHooks.WORLD_STATE_CHANGED.invoker().onWorldStateChanged(ready);
+			}
+		}
 	}
 
 	public static MPluginsAPI getAPI() {

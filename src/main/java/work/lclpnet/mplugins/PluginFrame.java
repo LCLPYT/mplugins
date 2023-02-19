@@ -1,8 +1,8 @@
 package work.lclpnet.mplugins;
 
 import org.slf4j.Logger;
-import work.lclpnet.mplugins.ext.fabric.FabricJsonManifestLoader;
-import work.lclpnet.mplugins.ext.fabric.FabricPluginContainer;
+import work.lclpnet.mplugins.ext.lib.FabricJsonManifestLoader;
+import work.lclpnet.mplugins.ext.lib.FabricPluginContainer;
 import work.lclpnet.plugin.PluginManager;
 import work.lclpnet.plugin.SimplePluginManager;
 import work.lclpnet.plugin.bootstrap.OrderedPluginBootstrap;
@@ -44,13 +44,14 @@ public class PluginFrame {
         var container = new FabricPluginContainer(logger);
         var bootstrap = new OrderedPluginBootstrap(discoveryService, container);
 
+        pluginManager = new SimplePluginManager(discoveryService, container);
+
         try {
             bootstrap.loadPlugins();
         } catch (IOException e) {
             throw new RuntimeException("Plugin bootstrap failed", e);
         }
 
-        pluginManager = new SimplePluginManager(discoveryService, container);
     }
 
     private void ensurePluginDirectoryExists() {

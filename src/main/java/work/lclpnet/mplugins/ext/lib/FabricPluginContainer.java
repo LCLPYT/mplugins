@@ -1,9 +1,11 @@
-package work.lclpnet.mplugins.ext.fabric;
+package work.lclpnet.mplugins.ext.lib;
 
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
+import work.lclpnet.mplugins.hook.builtin.PluginLifecycleHooks;
 import work.lclpnet.plugin.DistinctPluginContainer;
 import work.lclpnet.plugin.load.LoadablePlugin;
+import work.lclpnet.plugin.load.LoadedPlugin;
 import work.lclpnet.plugin.load.PluginLoadException;
 
 import java.util.HashSet;
@@ -46,5 +48,19 @@ public class FabricPluginContainer extends DistinctPluginContainer {
                         .formatted(manifest.id(), String.join(",", manifest.requires())));
             }
         }
+    }
+
+    @Override
+    protected void onPluginLoaded(LoadedPlugin plugin) {
+        super.onPluginLoaded(plugin);
+
+        PluginLifecycleHooks.LOADED.invoker().loaded(plugin);
+    }
+
+    @Override
+    protected void onPluginUnloaded(LoadedPlugin plugin) {
+        super.onPluginUnloaded(plugin);
+
+        PluginLifecycleHooks.UNLOADED.invoker().unloaded(plugin);
     }
 }
