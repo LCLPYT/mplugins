@@ -5,7 +5,7 @@
   "entry": "work.lclpnet.test.TestPlugin",
   "dependsOn": [],
   "fabric": {
-    "env": ["client", "server", "whatisdis?"],
+    "env": ["client", "server"],
     "requires": ["fabric-api"]
   }
 }
