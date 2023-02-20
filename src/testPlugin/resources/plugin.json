@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": "{version}",
+  "version": "${version}",
   "id": "testPlugin",
   "entry": "work.lclpnet.test.TestPlugin",
   "dependsOn": [],

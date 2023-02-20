@@ -1,3 +1,5 @@
+import java.nio.file.Files
+
 plugins {
 	id 'fabric-loom' version '1.1-SNAPSHOT'
 	id 'maven-publish'
@@ -110,6 +112,44 @@ task testPluginJar(type: Jar) {
 
 artifacts {
     archives testPluginJar
+}
+
+abstract class DeployPluginsTask extends DefaultTask {
+    @TaskAction
+    def execute() {
+        final def proj = this.getProject()
+        final def libsDir = proj.getBuildDir().toPath().resolve('libs')
+        final def version = proj.getVersion()
+
+        final def pluginsDir = proj.getProjectDir().toPath().resolve('run/plugins')
+        copyPlugins(libsDir, pluginsDir, version)
+
+        println('Plugins have been deployed to %s'.formatted(pluginsDir))
+    }
+
+    static def copyPlugins(java.nio.file.Path libsDir, java.nio.file.Path pluginsDir, version) {
+        if (!Files.exists(pluginsDir)) Files.createDirectories(pluginsDir)
+
+        def plugins = ['testPlugin']
+
+        plugins.forEach(plugin -> {
+            def testPlugin = '%s-%s.jar'.formatted(plugin, version)
+            copy(libsDir.resolve(testPlugin), pluginsDir.resolve(testPlugin))
+        })
+    }
+
+    static def copy(java.nio.file.Path a, java.nio.file.Path b) {
+        // transfer file contents to enable plugin hot-swapping using reloading
+        try (def input = new FileInputStream(a.toFile()); def output = new FileOutputStream(b.toFile())) {
+            input.transferTo output
+        }
+    }
+}
+
+tasks.register('deployPlugins', DeployPluginsTask)
+
+deployPlugins.configure {
+    dependsOn build
 }
 
 // configure the maven publication
