@@ -13,6 +13,13 @@ public class PluginLifecycleHooks {
                 }
             });
 
+    public static final Hook<Unloading> UNLOADING = HookFactory.createArrayBackedHook(Unloading.class,
+            listeners -> (plugin) -> {
+                for (var listener : listeners) {
+                    listener.unloading(plugin);
+                }
+            });
+
     public static final Hook<Unloaded> UNLOADED = HookFactory.createArrayBackedHook(Unloaded.class,
             listeners -> (plugin) -> {
                 for (var listener : listeners) {
@@ -29,6 +36,10 @@ public class PluginLifecycleHooks {
 
     public interface Loaded {
         void loaded(LoadedPlugin plugin);
+    }
+
+    public interface Unloading {
+        void unloading(LoadedPlugin plugin);
     }
 
     public interface Unloaded {

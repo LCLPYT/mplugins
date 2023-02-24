@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import work.lclpnet.mplugins.cmd.*;
 import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.mplugins.config.ConfigService;
+import work.lclpnet.mplugins.ext.MPluginLib;
 import work.lclpnet.mplugins.hook.builtin.PluginLifecycleHooks;
 
 import java.io.IOException;
@@ -38,6 +39,10 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 
 		loadConfig();
 		createPluginFrame();
+
+		// call world ready and unready on plugin load / unload
+		PluginLifecycleHooks.LOADED.register(MPluginLib::notifyWorldReady);
+		PluginLifecycleHooks.UNLOADING.register(MPluginLib::notifyWorldUnready);
 
 		pluginFrame.init();
 

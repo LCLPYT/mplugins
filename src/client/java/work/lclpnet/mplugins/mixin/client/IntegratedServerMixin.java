@@ -26,6 +26,6 @@ public class IntegratedServerMixin {
 
 		api.setWorldReady(true);
 
-		pluginManager.getPlugins().forEach(MPluginLib::callWorldReady);
+		pluginManager.getPlugins().forEach(MPluginLib::notifyWorldReady);
 	}
 }

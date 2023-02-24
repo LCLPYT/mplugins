@@ -5,8 +5,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import work.lclpnet.mplugins.MPlugins;
-import work.lclpnet.mplugins.ext.MPluginLib;
 import work.lclpnet.plugin.PluginManager;
 import work.lclpnet.plugin.load.LoadedPlugin;
 import work.lclpnet.plugin.load.PluginLoadException;
@@ -51,10 +49,6 @@ public class LoadCommand {
         if (loaded == null) {
             src.sendError(Text.literal("Could not load plugin from '%s'.".formatted(path)));
             return -1;
-        }
-
-        if (MPlugins.getAPI().isWorldReady()) {
-            MPluginLib.callWorldReady(loaded);
         }
 
         src.sendMessage(Text.literal("Plugin '%s' loaded.".formatted(loaded.getId())));

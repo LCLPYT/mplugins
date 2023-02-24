@@ -29,7 +29,7 @@ public abstract class MinecraftServerMixin {
         api.setWorldReady(false);
 
         var pluginManager = api.getPluginFrame().getPluginManager();
-        pluginManager.getPlugins().forEach(MPluginLib::callWorldUnready);
+        pluginManager.getPlugins().forEach(MPluginLib::notifyWorldUnready);
 
         // plugins should only be unloaded on dedicated servers here. on clients unload at client shutdown.
         if (this.isDedicated()) {

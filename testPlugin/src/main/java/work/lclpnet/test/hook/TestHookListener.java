@@ -29,7 +29,7 @@ public class TestHookListener implements HookListenerModule {
     @Override
     public void registerListeners(HookRegistrar registrar) {
         registrar.registerHook(PluginLifecycleHooks.LOADED, this::loaded);
-        registrar.registerHook(PluginLifecycleHooks.UNLOADED, this::unloaded);
+        registrar.registerHook(PluginLifecycleHooks.UNLOADING, this::unloaded);
         registrar.registerHook(PluginLifecycleHooks.WORLD_STATE_CHANGED, this::worldStateChanged);
     }
 }
