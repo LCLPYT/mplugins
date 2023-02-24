@@ -12,3 +12,6 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+rootProject.name = 'mplugins'
+include 'testPlugin'

@@ -13,17 +13,17 @@ import work.lclpnet.test.hook.TestHookListener;
 public class TestPlugin extends FabricPlugin implements WorldStateListener {
 
     public static final String ID = "testPlugin";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ID);
+    private static final Logger logger = LoggerFactory.getLogger(ID);
 
     @Override
     public void loadFabricPlugin() {
-        LOGGER.info("Test plugin loaded.");
+        logger.info("Test plugin loaded.");
 
         // plugins have full access to Minecraft, Fabric and MPlugins
         var fabric = FabricLoader.getInstance();
         var mplugins = fabric.getModContainer(MPlugins.MOD_ID).orElseThrow();
 
-        LOGGER.info("Running Minecraft {} with Fabric {} and mplugins {}",
+        logger.info("Running Minecraft {} with Fabric {} and mplugins {}",
                 MinecraftVersion.CURRENT.getName(), FabricLoaderImpl.VERSION, mplugins.getMetadata().getVersion());
 
         // when using hooks, they must be unregistered when the plugin unloads.
@@ -39,13 +39,13 @@ public class TestPlugin extends FabricPlugin implements WorldStateListener {
     @Override
     public void onWorldReady() {
         // world is loaded
-        LOGGER.info("Test plugin is ready.");
+        logger.info("Test plugin is ready.");
     }
 
     @Override
     public void onWorldUnready() {
         // world is going to unload
-        LOGGER.info("Test plugin is unready.");
+        logger.info("Test plugin is unready.");
 
         // unregister events here, if you registered them in onWorldReady()
         // otherwise, all events are unregistered at plugin unload automatically
@@ -54,7 +54,7 @@ public class TestPlugin extends FabricPlugin implements WorldStateListener {
 
     @Override
     public void unloadFabricPlugin() {
-        LOGGER.info("Test plugin unloaded.");
+        logger.info("Test plugin unloaded.");
 
         // registered Unloadables (such as hooks) will be unloaded after this method automatically
     }
