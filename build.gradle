@@ -38,12 +38,6 @@ allprojects {
         implementation "work.lclpnet:plugins4j:${project.plugins4j_version}"
     }
 
-    tasks.withType(GenerateModuleMetadata).tap {
-        configureEach {
-            enabled = false
-        }
-    }
-
     tasks.withType(JavaCompile).tap {
         configureEach {
             options.release = 17
