@@ -1,6 +1,8 @@
+import java.nio.file.Files
+
 plugins {
     id 'java'
-	id 'fabric-loom' version '1.1.8' apply false
+	id 'fabric-loom' version '1.1.8'
 	id 'maven-publish'
 	id 'gradle-build-utils' version '1.1.0'
 }
@@ -14,45 +16,25 @@ archivesBaseName = project.archives_base_name
 version = gitVersion.call()
 group = project.maven_group
 
-allprojects {
-    apply plugin: 'fabric-loom'
-
-    repositories {
-        mavenCentral()
-
-        maven {
-            url "https://repo.lclpnet.work/repository/internal"
+sourceSets {
+    testPlugin {
+        java {
+            compileClasspath += main.output + main.compileClasspath
+            runtimeClasspath += main.output + main.runtimeClasspath
         }
-    }
-
-    dependencies {
-        minecraft "com.mojang:minecraft:${project.minecraft_version}"
-        mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-        modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-        /* other Java dependencies */
-        implementation 'com.google.code.findbugs:jsr305:3.0.2'
-
-        implementation "work.lclpnet:plugins4j:${project.plugins4j_version}"
-    }
-
-    tasks.withType(JavaCompile).tap {
-        configureEach {
-            options.release = 17
-        }
-    }
-
-    java {
-        withSourcesJar()
     }
 }
 
-subprojects {
-    dependencies {
-        // add rootProject classes to subproject
-        implementation project(path: ":", configuration: "namedElements")
+configurations {
+    testPluginImplementation.extendsFrom(implementation)
+    testPluginRuntimeOnly.extendsFrom(runtimeOnly)
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url "https://repo.lclpnet.work/repository/internal"
     }
 }
 
@@ -68,10 +50,19 @@ loom {
 }
 
 dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
     /* other Java dependencies */
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
     implementation 'org.json:json:20220924'
     include 'org.json:json:20220924'
 
+    implementation "work.lclpnet:plugins4j:${project.plugins4j_version}"
     include "work.lclpnet:plugins4j:${project.plugins4j_version}"
 
     /* testing */
@@ -87,6 +78,23 @@ processResources {
 	}
 }
 
+processTestPluginResources {
+    inputs.property "version", project.version
+
+    filesMatching("plugin.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 17
+}
+
+java {
+	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+	withSourcesJar()
+}
+
 test {
     useJUnitPlatform()
 }
@@ -95,6 +103,50 @@ jar {
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}
+}
+
+task testPluginJar(type: Jar) {
+    from sourceSets.testPlugin.output
+    archiveVersion.set(project.version.toString())
+    archiveBaseName.set('testPlugin')
+}
+
+artifacts {
+    archives testPluginJar
+}
+
+abstract class DeployPluginsTask extends DefaultTask {
+    @TaskAction
+    def execute() {
+        final def proj = this.getProject()
+        final def plugins = proj.getTasks().named('testPluginJar').get().outputs.files.files
+        final def pluginsDir = proj.getProjectDir().toPath().resolve('run/plugins')
+
+        copyPlugins(plugins, pluginsDir)
+
+        println('Plugins have been deployed to %s'.formatted(pluginsDir))
+    }
+
+    static def copyPlugins(Set<File> plugins, java.nio.file.Path pluginsDir) {
+        if (!Files.exists(pluginsDir)) Files.createDirectories(pluginsDir)
+
+        plugins.forEach(plugin -> {
+            copy(plugin.toPath(), pluginsDir.resolve(plugin.getName()))
+        })
+    }
+
+    static def copy(java.nio.file.Path a, java.nio.file.Path b) {
+        // transfer file contents to enable plugin hot-swapping using reloading
+        try (def input = new FileInputStream(a.toFile()); def output = new FileOutputStream(b.toFile())) {
+            input.transferTo output
+        }
+    }
+}
+
+tasks.register('deploy', DeployPluginsTask)
+
+deploy.configure {
+    dependsOn build
 }
 
 // configure the maven publication
