@@ -52,8 +52,6 @@ public class FabricPluginContainer extends DistinctPluginContainer {
 
     @Override
     protected void onPluginLoaded(LoadedPlugin plugin) {
-        super.onPluginLoaded(plugin);
-
         PluginLifecycleHooks.LOADED.invoker().loaded(plugin);
     }
 
@@ -66,8 +64,6 @@ public class FabricPluginContainer extends DistinctPluginContainer {
 
     @Override
     protected void onPluginUnloaded(LoadedPlugin plugin) {
-        super.onPluginUnloaded(plugin);
-
         PluginLifecycleHooks.UNLOADED.invoker().unloaded(plugin);
     }
 }
