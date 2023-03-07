@@ -6,28 +6,28 @@ import work.lclpnet.plugin.load.LoadedPlugin;
 
 public class PluginLifecycleHooks {
 
-    public static final Hook<Loaded> LOADED = HookFactory.createArrayBackedHook(Loaded.class,
+    public static final Hook<Loaded> LOADED = HookFactory.createArrayBacked(Loaded.class,
             listeners -> (plugin) -> {
                 for (var listener : listeners) {
                     listener.loaded(plugin);
                 }
             });
 
-    public static final Hook<Unloading> UNLOADING = HookFactory.createArrayBackedHook(Unloading.class,
+    public static final Hook<Unloading> UNLOADING = HookFactory.createArrayBacked(Unloading.class,
             listeners -> (plugin) -> {
                 for (var listener : listeners) {
                     listener.unloading(plugin);
                 }
             });
 
-    public static final Hook<Unloaded> UNLOADED = HookFactory.createArrayBackedHook(Unloaded.class,
+    public static final Hook<Unloaded> UNLOADED = HookFactory.createArrayBacked(Unloaded.class,
             listeners -> (plugin) -> {
                 for (var listener : listeners) {
                     listener.unloaded(plugin);
                 }
             });
 
-    public static final Hook<WorldStateChange> WORLD_STATE_CHANGED = HookFactory.createArrayBackedHook(WorldStateChange.class,
+    public static final Hook<WorldStateChange> WORLD_STATE_CHANGED = HookFactory.createArrayBacked(WorldStateChange.class,
             listeners -> (ready) -> {
                 for (var listener : listeners) {
                     listener.onWorldStateChanged(ready);
