@@ -35,7 +35,7 @@ public class FabricPluginContainer extends DistinctPluginContainer {
 
         // check if mod requirements are met
         if (manifest.requires() != null) {
-            var missingMods = new HashSet<>();
+            var missingMods = new HashSet<String>();
 
             for (var modId : manifest.requires()) {
                 if (!FabricLoader.getInstance().isModLoaded(modId)) {
@@ -45,7 +45,7 @@ public class FabricPluginContainer extends DistinctPluginContainer {
 
             if (!missingMods.isEmpty()) {
                 throw new PluginLoadException("Plugin %s needs the following mod(s) to be installed: %s"
-                        .formatted(manifest.id(), String.join(",", manifest.requires())));
+                        .formatted(manifest.id(), String.join(",", missingMods)));
             }
         }
     }

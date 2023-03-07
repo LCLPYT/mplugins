@@ -100,10 +100,10 @@ test {
     useJUnitPlatform()
 }
 
-jar {
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
-	}
+[jar, sourcesJar].each {
+    it.from(rootProject.file('LICENSE')) {
+        rename { "${it}_${project.archivesBaseName}"}
+    }
 }
 
 task testPluginJar(type: Jar) {
@@ -156,7 +156,8 @@ publishing {
         mavenJava(MavenPublication) {
             artifactId = project.archives_base_name
 
-            from components.java
+            artifact remapJar
+            artifact remapSourcesJar
 
             pom {
                 name = 'MPlugins'
