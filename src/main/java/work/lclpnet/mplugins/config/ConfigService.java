@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 
 public class ConfigService {
 
@@ -31,8 +30,14 @@ public class ConfigService {
 
         var content = Files.readString(FILE, StandardCharsets.UTF_8);
         var json = new JSONObject(content.trim());
+        var config = new Config(json);
 
-        return new Config(json);
+        if (!json.similar(config.serialize())) {
+            // old config detected, overwrite with newer version
+            saveConfig(config);
+        }
+
+        return config;
     }
 
     public static void saveConfig(Config config) throws IOException {

@@ -68,7 +68,9 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 		final var pluginDir = Optional.ofNullable(config.pluginDirectory)
 				.orElse(Path.of("plugins"));
 
-		pluginFrame = new PluginFrame(pluginDir, LOGGER);
+		final var options = new PluginFrame.Options(pluginDir, config.autoLoadPlugins);
+
+		pluginFrame = new PluginFrame(options, LOGGER);
 	}
 
 	private void loadConfig() {

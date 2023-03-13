@@ -17,6 +17,9 @@ class ConfigTest {
               "commands": {
                 "enableLoadCommand": true,
                 "enableUnloadCommand": true
+              },
+              "bootstrap": {
+                "autoLoadPlugins": true
               }
             }
             """.trim();
@@ -40,6 +43,7 @@ class ConfigTest {
         assertBoth(expected, serialized, x -> x.getString("pluginDirectory"));
         assertBoth(expected, serialized, x -> x.getJSONObject("commands").getBoolean("enableLoadCommand"));
         assertBoth(expected, serialized, x -> x.getJSONObject("commands").getBoolean("enableUnloadCommand"));
+        assertBoth(expected, serialized, x -> x.getJSONObject("bootstrap").getBoolean("autoLoadPlugins"));
     }
 
     private static <T> void assertBoth(T expected, T actual, Function<T, Object> getter) {

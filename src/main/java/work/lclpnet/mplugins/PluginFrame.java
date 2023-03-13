@@ -17,7 +17,7 @@ import java.nio.file.Path;
 
 public class PluginFrame {
 
-    private final Path pluginDirectory;
+    private final Options options;
     private final Logger logger;
     @Nullable
     private DefaultClassLoaderContainer clContainer = null;
@@ -26,8 +26,8 @@ public class PluginFrame {
     @Nullable
     private PluginDiscoveryService discoveryService = null;
 
-    public PluginFrame(Path pluginDirectory, Logger logger) {
-        this.pluginDirectory = pluginDirectory;
+    public PluginFrame(Options options, Logger logger) {
+        this.options = options;
         this.logger = logger;
     }
 
@@ -39,33 +39,34 @@ public class PluginFrame {
         clContainer = new DefaultClassLoaderContainer();
 
         discoveryService = new DirectoryPluginDiscoveryService(
-                pluginDirectory, new FabricJsonManifestLoader(), clContainer, logger
+                options.pluginDirectory(), new FabricJsonManifestLoader(), clContainer, logger
         );
         var container = new FabricPluginContainer(logger);
         var bootstrap = new OrderedPluginBootstrap(discoveryService, container);
 
         pluginManager = new SimplePluginManager(discoveryService, container);
 
-        try {
-            bootstrap.loadPlugins();
-        } catch (IOException e) {
-            throw new RuntimeException("Plugin bootstrap failed", e);
+        if (options.autoLoadPlugins) {
+            try {
+                bootstrap.loadPlugins();
+            } catch (IOException e) {
+                throw new RuntimeException("Plugin bootstrap failed", e);
+            }
         }
-
     }
 
     private void ensurePluginDirectoryExists() {
-        if (Files.exists(pluginDirectory)) return;
+        if (Files.exists(options.pluginDirectory())) return;
 
         try {
-            Files.createDirectories(pluginDirectory);
+            Files.createDirectories(options.pluginDirectory());
         } catch (IOException e) {
             throw new RuntimeException("Could not create plugin directory", e);
         }
     }
 
     public Path getPluginDirectory() {
-        return pluginDirectory;
+        return options.pluginDirectory();
     }
 
     public Logger getLogger() {
@@ -91,4 +92,6 @@ public class PluginFrame {
     private static void notInitialized() {
         throw new IllegalStateException("Plugin Frame is not initialized");
     }
+
+    public record Options(Path pluginDirectory, boolean autoLoadPlugins) {}
 }
