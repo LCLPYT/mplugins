@@ -73,6 +73,7 @@ public class FabricPlugin implements Plugin, PluginUnloader {
     }
 
     public Logger getLogger() {
+        if (logger == null) throw new IllegalStateException("Not loaded");
         return logger;
     }
 }
