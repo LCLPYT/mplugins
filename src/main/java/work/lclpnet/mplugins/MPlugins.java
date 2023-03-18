@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import work.lclpnet.mplugins.cmd.*;
 import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.mplugins.config.ConfigService;
+import work.lclpnet.mplugins.event.PluginLifecycleEvents;
 import work.lclpnet.mplugins.ext.MPluginLib;
-import work.lclpnet.mplugins.hook.builtin.PluginLifecycleHooks;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -41,8 +41,8 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 		createPluginFrame();
 
 		// call world ready and unready on plugin load / unload
-		PluginLifecycleHooks.LOADED.register(MPluginLib::notifyWorldReady);
-		PluginLifecycleHooks.UNLOADING.register(MPluginLib::notifyWorldUnready);
+		PluginLifecycleEvents.LOADED.register(MPluginLib::notifyWorldReady);
+		PluginLifecycleEvents.UNLOADING.register(MPluginLib::notifyWorldUnready);
 
 		pluginFrame.init();
 
@@ -104,7 +104,7 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 			if (this.worldReady != ready) {
 				this.worldReady = ready;
 
-				PluginLifecycleHooks.WORLD_STATE_CHANGED.invoker().onWorldStateChanged(ready);
+				PluginLifecycleEvents.WORLD_STATE_CHANGED.invoker().onWorldStateChanged(ready);
 			}
 		}
 	}

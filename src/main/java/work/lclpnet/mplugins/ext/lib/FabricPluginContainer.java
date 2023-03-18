@@ -2,7 +2,7 @@ package work.lclpnet.mplugins.ext.lib;
 
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
-import work.lclpnet.mplugins.hook.builtin.PluginLifecycleHooks;
+import work.lclpnet.mplugins.event.PluginLifecycleEvents;
 import work.lclpnet.plugin.DistinctPluginContainer;
 import work.lclpnet.plugin.load.LoadablePlugin;
 import work.lclpnet.plugin.load.LoadedPlugin;
@@ -52,18 +52,18 @@ public class FabricPluginContainer extends DistinctPluginContainer {
 
     @Override
     protected void onPluginLoaded(LoadedPlugin plugin) {
-        PluginLifecycleHooks.LOADED.invoker().loaded(plugin);
+        PluginLifecycleEvents.LOADED.invoker().loaded(plugin);
     }
 
     @Override
     protected void onPluginUnloading(LoadedPlugin plugin) {
         super.onPluginUnloading(plugin);
 
-        PluginLifecycleHooks.UNLOADING.invoker().unloading(plugin);
+        PluginLifecycleEvents.UNLOADING.invoker().unloading(plugin);
     }
 
     @Override
     protected void onPluginUnloaded(LoadedPlugin plugin) {
-        PluginLifecycleHooks.UNLOADED.invoker().unloaded(plugin);
+        PluginLifecycleEvents.UNLOADED.invoker().unloaded(plugin);
     }
 }

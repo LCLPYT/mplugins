@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import work.lclpnet.mplugins.MPlugins;
 import work.lclpnet.mplugins.ext.FabricPlugin;
 import work.lclpnet.mplugins.ext.WorldStateListener;
-import work.lclpnet.test.hook.TestHookListener;
 
 public class TestPlugin extends FabricPlugin implements WorldStateListener {
 
@@ -26,11 +25,6 @@ public class TestPlugin extends FabricPlugin implements WorldStateListener {
         logger.info("Running Minecraft {} with Fabric {} and mplugins {}",
                 MinecraftVersion.CURRENT.getName(), FabricLoaderImpl.VERSION, mplugins.getMetadata().getVersion());
 
-        // when using hooks, they must be unregistered when the plugin unloads.
-        // plugins can use the registerHook and registerHooks methods for comfort.
-        // these methods take care of unregistering the hooks at plugin unload
-        registerHooks(new TestHookListener(getLogger()));
-
         // for other classes implementing the Unloadable interface, the registerUnloadable() method can be used
         // in order to automatically unload them.
         // registerUnloadable(someUnloadableInstance);
@@ -46,16 +40,12 @@ public class TestPlugin extends FabricPlugin implements WorldStateListener {
     public void onWorldUnready() {
         // world is going to unload
         logger.info("Test plugin is unready.");
-
-        // unregister events here, if you registered them in onWorldReady()
-        // otherwise, all events are unregistered at plugin unload automatically
-        // unregisterAllHooks();
     }
 
     @Override
     public void unloadFabricPlugin() {
         logger.info("Test plugin unloaded.");
 
-        // registered Unloadables (such as hooks) will be unloaded after this method automatically
+        // registered Unloadables will be unloaded after this method automatically
     }
 }

@@ -1,33 +1,33 @@
-package work.lclpnet.mplugins.hook.builtin;
+package work.lclpnet.mplugins.event;
 
-import work.lclpnet.mplugins.hook.Hook;
-import work.lclpnet.mplugins.hook.HookFactory;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import work.lclpnet.plugin.load.LoadedPlugin;
 
-public class PluginLifecycleHooks {
+public class PluginLifecycleEvents {
 
-    public static final Hook<Loaded> LOADED = HookFactory.createArrayBacked(Loaded.class,
+    public static final Event<Loaded> LOADED = EventFactory.createArrayBacked(Loaded.class,
             listeners -> (plugin) -> {
                 for (var listener : listeners) {
                     listener.loaded(plugin);
                 }
             });
 
-    public static final Hook<Unloading> UNLOADING = HookFactory.createArrayBacked(Unloading.class,
+    public static final Event<Unloading> UNLOADING = EventFactory.createArrayBacked(Unloading.class,
             listeners -> (plugin) -> {
                 for (var listener : listeners) {
                     listener.unloading(plugin);
                 }
             });
 
-    public static final Hook<Unloaded> UNLOADED = HookFactory.createArrayBacked(Unloaded.class,
+    public static final Event<Unloaded> UNLOADED = EventFactory.createArrayBacked(Unloaded.class,
             listeners -> (plugin) -> {
                 for (var listener : listeners) {
                     listener.unloaded(plugin);
                 }
             });
 
-    public static final Hook<WorldStateChange> WORLD_STATE_CHANGED = HookFactory.createArrayBacked(WorldStateChange.class,
+    public static final Event<WorldStateChange> WORLD_STATE_CHANGED = EventFactory.createArrayBacked(WorldStateChange.class,
             listeners -> (ready) -> {
                 for (var listener : listeners) {
                     listener.onWorldStateChanged(ready);
