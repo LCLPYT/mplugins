@@ -1,8 +1,8 @@
 package work.lclpnet.mplugins.ext;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import work.lclpnet.mplugins.MPlugins;
+import work.lclpnet.mplugins.util.MPluginsLoggerSupplier;
+import work.lclpnet.mplugins.util.PluginLoggerSupplier;
 import work.lclpnet.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -11,17 +11,20 @@ import java.util.List;
 public class FabricPlugin implements Plugin, PluginUnloader {
 
     private final List<Unloadable> unloadables = new ArrayList<>();
+    private final PluginLoggerSupplier loggerSupplier;
     private Logger logger;
+
+    public FabricPlugin() {
+        this(new MPluginsLoggerSupplier());
+    }
+
+    public FabricPlugin(PluginLoggerSupplier loggerSupplier) {
+        this.loggerSupplier = loggerSupplier;
+    }
 
     @Override
     public final void load() {
-        var plugin = MPlugins.getAPI().getPluginFrame().getPluginManager().getPlugin(this);
-
-        if (plugin.isPresent()) {
-            logger = LoggerFactory.getLogger(plugin.get().getId());
-        } else {
-            logger = LoggerFactory.getLogger(this.getClass());
-        }
+        this.logger = loggerSupplier.getLogger(this);
 
         loadFabricPlugin();
     }
