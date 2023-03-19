@@ -33,7 +33,7 @@ public class FabricPlugin implements Plugin, PluginUnloader {
      * If you need other entries, you can implement provided interfaces such as {@link WorldStateListener}
      * in order to receive world ready events.
      */
-    public void loadFabricPlugin() {
+    protected void loadFabricPlugin() {
         // no-op
     }
 
@@ -47,7 +47,7 @@ public class FabricPlugin implements Plugin, PluginUnloader {
     /**
      * Called on plugin unload.
      */
-    public void unloadFabricPlugin() {
+    protected void unloadFabricPlugin() {
         // no-op
     }
 
