@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import work.lclpnet.mplugins.MPlugins;
+import work.lclpnet.mplugins.MPluginsAPI;
 
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
@@ -16,7 +16,7 @@ public class MinecraftClientMixin {
     )
     public void mplugins$close(CallbackInfo ci) {
         // unload plugins when closing the MinecraftClient
-        var api = MPlugins.getAPI();
+        var api = MPluginsAPI.get();
         var pluginManager = api.getPluginFrame().getPluginManager();
 
         pluginManager.shutdown();

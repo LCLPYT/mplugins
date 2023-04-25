@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import work.lclpnet.mplugins.ext.FabricPlugin;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FabricPluginTest {
@@ -20,5 +21,11 @@ public class FabricPluginTest {
         plugin.load();
 
         plugin.getLogger();
+    }
+
+    @Test
+    public void testEnvironmentNotNull() {
+        var plugin = new FabricPlugin(x -> logger);
+        assertNotNull(plugin.getEnvironment());
     }
 }

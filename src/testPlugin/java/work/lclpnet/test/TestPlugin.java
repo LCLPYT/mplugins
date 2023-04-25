@@ -3,6 +3,7 @@ package work.lclpnet.test;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.minecraft.MinecraftVersion;
+import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import work.lclpnet.mplugins.MPlugins;
@@ -28,6 +29,14 @@ public class TestPlugin extends FabricPlugin implements WorldStateListener {
         // for other classes implementing the Unloadable interface, the registerUnloadable() method can be used
         // in order to automatically unload them.
         // registerUnloadable(someUnloadableInstance);
+
+        // if you need a reference to MinecraftServer instance, use this method
+        MinecraftServer server = getEnvironment().getServer();
+        if (server == null) {
+            logger.info("The Minecraft server is not yet active");
+        } else {
+            logger.info("A '{}' Minecraft server is active.", server.getServerModName());
+        }
     }
 
     @Override
