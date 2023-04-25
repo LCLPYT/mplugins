@@ -62,6 +62,9 @@ dependencies {
     implementation 'org.json:json:20220924'
     include 'org.json:json:20220924'
 
+    implementation "work.lclpnet:json-config4j:${project.config_version}"
+    include "work.lclpnet:json-config4j:${project.config_version}"
+
     // make plugins4j visible for consumers at compile time
     api "work.lclpnet:plugins4j:${project.plugins4j_version}"
     include "work.lclpnet:plugins4j:${project.plugins4j_version}"

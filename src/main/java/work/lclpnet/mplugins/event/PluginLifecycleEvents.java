@@ -6,6 +6,13 @@ import work.lclpnet.plugin.load.LoadedPlugin;
 
 public class PluginLifecycleEvents {
 
+    public static final Event<Loading> LOADING = EventFactory.createArrayBacked(Loading.class,
+            listeners -> (plugin) -> {
+                for (var listener : listeners) {
+                    listener.loading(plugin);
+                }
+            });
+
     public static final Event<Loaded> LOADED = EventFactory.createArrayBacked(Loaded.class,
             listeners -> (plugin) -> {
                 for (var listener : listeners) {
@@ -33,6 +40,10 @@ public class PluginLifecycleEvents {
                     listener.onWorldStateChanged(ready);
                 }
             });
+
+    public interface Loading {
+        void loading(LoadedPlugin plugin);
+    }
 
     public interface Loaded {
         void loaded(LoadedPlugin plugin);

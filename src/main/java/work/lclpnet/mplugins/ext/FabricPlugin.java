@@ -12,6 +12,7 @@ public class FabricPlugin implements Plugin, PluginUnloader {
 
     private final List<Unloadable> unloadables = new ArrayList<>();
     private final PluginLoggerSupplier loggerSupplier;
+    private final PluginEnvironment environment = new MPluginsEnvironment();
     private Logger logger;
 
     public FabricPlugin() {
@@ -78,5 +79,9 @@ public class FabricPlugin implements Plugin, PluginUnloader {
     public Logger getLogger() {
         if (logger == null) throw new IllegalStateException("Not loaded");
         return logger;
+    }
+
+    public PluginEnvironment getEnvironment() {
+        return environment;
     }
 }
