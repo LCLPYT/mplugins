@@ -53,7 +53,7 @@ public class KibuDevConfig {
 
     @Nullable
     public List<URL[]> getPluginPaths() {
-        if (!config.has("plugin_paths")) return null;
+        if (config == null || !config.has("plugin_paths")) return null;
 
         JSONArray pluginPaths = config.getJSONArray("plugin_paths");
         List<URL[]> classpath = new ArrayList<>();
