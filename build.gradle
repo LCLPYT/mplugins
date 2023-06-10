@@ -1,19 +1,21 @@
+import work.lclpnet.build.task.GithubDeploymentTask
+
 import java.nio.file.Files
 
 plugins {
     id 'java'
 	id 'fabric-loom' version '1.1.8'
 	id 'maven-publish'
-	id 'gradle-build-utils' version '1.2.0'
+	id 'gradle-build-utils' version '1.4.0'
 }
 
-Properties props = loadProperties.call('publish.properties') as Properties
+Properties props = buildUtils.loadProperties('publish.properties')
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-version = gitVersion.call()
+version = buildUtils.gitVersion()
 group = project.maven_group
 
 sourceSets {
@@ -92,7 +94,7 @@ processTestPluginResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
+	it.options.release.convention(17)
 }
 
 java {
@@ -110,7 +112,7 @@ test {
     }
 }
 
-task testPluginJar(type: Jar) {
+tasks.register('testPluginJar', Jar) {
     from sourceSets.testPlugin.output
     archiveVersion.set(project.version.toString())
     archiveBaseName.set('testPlugin')
@@ -154,7 +156,24 @@ deploy.configure {
     dependsOn build
 }
 
-// configure the maven publication
+def env = System.getenv()
+
+tasks.register("github", GithubDeploymentTask) {
+    dependsOn tasks.remapJar
+
+    config {
+        token = env.get("GITHUB_TOKEN")
+        repository = env.get("GITHUB_REPO")
+    }
+
+    release {
+        title = "[$project.minecraft_version] $project.name $project.version"
+        tag = buildUtils.latestTag()
+    }
+
+    assets.add(tasks.remapJar.archiveFile.get())
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -172,7 +191,6 @@ publishing {
 
     repositories {
         maven {
-            def env = System.getenv()
             if (Arrays.stream("DEPLOY_URL", "DEPLOY_USER", "DEPLOY_PASSWORD").allMatch(env.&containsKey)) {
                 credentials {
                     username env.get("DEPLOY_USER")
