@@ -167,7 +167,7 @@ tasks.register("github", GithubDeploymentTask) {
     }
 
     release {
-        title = "[$project.minecraft_version] mplugins $project.version"
+        title = "[$project.minecraft_version] $project.name $project.version"
         tag = buildUtils.latestTag()
     }
 
