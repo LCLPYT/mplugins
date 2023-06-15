@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import work.lclpnet.mplugins.MPlugins;
+import work.lclpnet.mplugins.MPluginsAPI;
 import work.lclpnet.mplugins.ext.MPluginLib;
 
 @Mixin(MinecraftServer.class)
@@ -25,7 +25,7 @@ public abstract class MinecraftServerMixin {
     )
     private void mplugins$beforeGetNetworkIo(CallbackInfo ci) {
         // call world unready on all loaded plugins
-        var api = MPlugins.getAPI();
+        var api = MPluginsAPI.get();
         api.setWorldReady(false);
 
         var pluginManager = api.getPluginFrame().getPluginManager();

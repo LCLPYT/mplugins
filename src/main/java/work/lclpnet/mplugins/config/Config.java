@@ -1,15 +1,18 @@
 package work.lclpnet.mplugins.config;
 
 import org.json.JSONObject;
+import work.lclpnet.config.json.JsonConfig;
+import work.lclpnet.config.json.JsonConfigFactory;
 
 import java.nio.file.Path;
 
-public class Config {
+public class Config implements JsonConfig {
 
     public Path pluginDirectory = Path.of("plugins");
     public boolean enableLoadCommand = true;
     public boolean enableUnloadCommand = true;
-    public boolean autoLoadPlugins = true;
+    public boolean loadPluginsOnStartup = true;
+    public boolean autoReloadPlugins = false;
 
     public Config() {}
 
@@ -19,11 +22,15 @@ public class Config {
             this.pluginDirectory = Path.of(pluginDirectory);
         }
 
-        if (obj.has("bootstrap")) {
-            var bootstrap = obj.getJSONObject("bootstrap");
+        if (obj.has("loader")) {
+            var loader = obj.getJSONObject("loader");
 
-            if (bootstrap.has("autoLoadPlugins")) {
-                this.autoLoadPlugins = bootstrap.getBoolean("autoLoadPlugins");
+            if (loader.has("loadPluginsOnStartup")) {
+                this.loadPluginsOnStartup = loader.getBoolean("loadPluginsOnStartup");
+            }
+
+            if (loader.has("autoReloadPlugins")) {
+                this.autoReloadPlugins = loader.getBoolean("autoReloadPlugins");
             }
         }
 
@@ -40,7 +47,8 @@ public class Config {
         }
     }
 
-    public JSONObject serialize() {
+    @Override
+    public JSONObject toJson() {
         var json = new JSONObject();
 
         json.put("pluginDirectory", pluginDirectory.toString());
@@ -51,11 +59,24 @@ public class Config {
 
         json.put("commands", commands);
 
-        var bootstrap = new JSONObject();
-        bootstrap.put("autoLoadPlugins", autoLoadPlugins);
+        var loader = new JSONObject();
+        loader.put("loadPluginsOnStartup", loadPluginsOnStartup);
+        loader.put("autoReloadPlugins", autoReloadPlugins);
 
-        json.put("bootstrap", bootstrap);
+        json.put("loader", loader);
 
         return json;
     }
+
+    static final JsonConfigFactory<Config> FACTORY = new JsonConfigFactory<>() {
+        @Override
+        public Config createDefaultConfig() {
+            return new Config();
+        }
+
+        @Override
+        public Config createConfig(JSONObject json) {
+            return new Config(json);
+        }
+    };
 }

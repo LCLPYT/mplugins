@@ -1,6 +1,9 @@
 package work.lclpnet.mplugins;
 
+import net.minecraft.server.MinecraftServer;
 import work.lclpnet.mplugins.config.Config;
+
+import javax.annotation.Nullable;
 
 public interface MPluginsAPI {
 
@@ -11,4 +14,11 @@ public interface MPluginsAPI {
     boolean isWorldReady();
 
     void setWorldReady(boolean ready);
+
+    @Nullable
+    MinecraftServer getServer();
+
+    static MPluginsAPI get() {
+        return MPlugins.getAPI();
+    }
 }
