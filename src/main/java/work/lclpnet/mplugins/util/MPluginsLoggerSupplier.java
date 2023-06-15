@@ -14,7 +14,7 @@ public class MPluginsLoggerSupplier implements PluginLoggerSupplier {
         if (loadedPlugin.isPresent()) {
             return LoggerFactory.getLogger(loadedPlugin.get().getId());
         } else {
-            return LoggerFactory.getLogger(this.getClass());
+            return LoggerFactory.getLogger(plugin.getClass());
         }
     }
 }
