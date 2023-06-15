@@ -6,7 +6,7 @@ plugins {
     id 'java'
 	id 'fabric-loom' version '1.1.8'
 	id 'maven-publish'
-	id 'gradle-build-utils' version '1.4.0'
+	id 'gradle-build-utils' version '1.5.2'
 }
 
 Properties props = buildUtils.loadProperties('publish.properties')
@@ -61,8 +61,8 @@ dependencies {
     /* other Java dependencies */
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-    implementation 'org.json:json:20220924'
-    include 'org.json:json:20220924'
+    implementation 'org.json:json:20230227'
+    include 'org.json:json:20230227'
 
     implementation "work.lclpnet:json-config4j:${project.config_version}"
     include "work.lclpnet:json-config4j:${project.config_version}"
@@ -189,24 +189,5 @@ publishing {
         }
     }
 
-    repositories {
-        maven {
-            if (Arrays.stream("DEPLOY_URL", "DEPLOY_USER", "DEPLOY_PASSWORD").allMatch(env.&containsKey)) {
-                credentials {
-                    username env.get("DEPLOY_USER")
-                    password env.get("DEPLOY_PASSWORD")
-                }
-                url env.get("DEPLOY_URL")
-            }
-            else if (Arrays.stream("mavenHost", "mavenUser", "mavenPassword").allMatch(props.&containsKey)) {
-                credentials {
-                    username props.getProperty('mavenUser')
-                    password props.getProperty('mavenPassword')
-                }
-                url props.getProperty('mavenHost')
-            } else {
-                url "file:///${project.projectDir}/repo"
-            }
-        }
-    }
+    buildUtils.setupPublishRepository(it, props)
 }
