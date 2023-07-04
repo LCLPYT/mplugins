@@ -16,10 +16,14 @@ import work.lclpnet.plugin.load.DefaultClassLoaderContainer;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PluginFrame {
 
@@ -71,9 +75,35 @@ public class PluginFrame {
         List<URL[]> classpath = kibuDevConfig.getPluginPaths();
         if (classpath == null) return directoryLoader;
 
+        classpath = filterClasspath(classpath);
+
         var devLoader = new ClasspathPluginDiscoveryService(classpath, manifestLoader, clContainer, logger);
 
         return new MultiPluginDiscoveryService(directoryLoader, devLoader);
+    }
+
+    private List<URL[]> filterClasspath(List<URL[]> classpath) {
+        return classpath.stream()
+                .map(urls -> Arrays.stream(urls)
+                        .filter(this::urlExists)
+                        .toArray(URL[]::new))
+                .filter(existingOnly -> existingOnly.length > 0)
+                .collect(Collectors.toList());
+    }
+
+    private boolean urlExists(URL url) {
+        if (!"file".equals(url.getProtocol())) return true;
+
+        final Path path;
+
+        try {
+            path = Paths.get(url.toURI());
+        } catch (URISyntaxException e) {
+            logger.error("Failed to parse local url {}", url, e);
+            return true;
+        }
+
+        return Files.exists(path);
     }
 
     private void ensurePluginDirectoryExists() {
