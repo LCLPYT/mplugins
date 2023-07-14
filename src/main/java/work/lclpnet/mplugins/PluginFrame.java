@@ -1,6 +1,7 @@
 package work.lclpnet.mplugins;
 
 import org.slf4j.Logger;
+import work.lclpnet.mplugins.event.PluginBootstrapEvents;
 import work.lclpnet.plugin.PluginManager;
 import work.lclpnet.plugin.bootstrap.PluginBootstrap;
 import work.lclpnet.plugin.discover.PluginDiscoveryService;
@@ -41,11 +42,15 @@ public class PluginFrame {
 
         if (!options.autoLoadPlugins) return;
 
+        PluginBootstrapEvents.BEGIN.invoker().onBootstrap(this);
+
         try {
             pluginBootstrap.loadPlugins();
         } catch (IOException e) {
             throw new RuntimeException("Plugin bootstrap failed", e);
         }
+
+        PluginBootstrapEvents.COMPLETE.invoker().onBootstrap(this);
     }
 
     private void ensurePluginDirectoryExists() {
