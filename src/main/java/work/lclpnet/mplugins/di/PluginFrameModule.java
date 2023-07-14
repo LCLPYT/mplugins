@@ -21,6 +21,7 @@ import work.lclpnet.plugin.discover.MultiPluginDiscoveryService;
 import work.lclpnet.plugin.discover.PluginDiscoveryService;
 import work.lclpnet.plugin.load.DefaultClassLoaderContainer;
 
+import javax.inject.Singleton;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -41,24 +42,29 @@ public abstract class PluginFrameModule {
         return new PluginFrame.Options(pluginDir, config.loadPluginsOnStartup);
     }
 
+    @Singleton
     @Provides
     static DefaultClassLoaderContainer provideClassLoaderContainer() {
         return new DefaultClassLoaderContainer();
     }
 
+    @Singleton
     @Binds
     abstract PluginContainer bindPluginContainer(FabricPluginContainer logger);
 
+    @Singleton
     @Provides
     static PluginBootstrap providePluginBootstrap(PluginDiscoveryService discoveryService, PluginContainer container) {
         return new OrderedPluginBootstrap(discoveryService, container);
     }
 
+    @Singleton
     @Provides
     static PluginManager providePluginManager(PluginDiscoveryService discoveryService, PluginContainer container) {
         return new SimplePluginManager(discoveryService, container);
     }
 
+    @Singleton
     @Provides
     static PluginDiscoveryService provideDiscoveryService(PluginFrame.Options options, Logger logger, DefaultClassLoaderContainer clContainer) {
         final var manifestLoader = new FabricJsonManifestLoader();

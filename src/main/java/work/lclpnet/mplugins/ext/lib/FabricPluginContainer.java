@@ -9,8 +9,10 @@ import work.lclpnet.plugin.load.LoadedPlugin;
 import work.lclpnet.plugin.load.PluginLoadException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.HashSet;
 
+@Singleton
 public class FabricPluginContainer extends DistinctPluginContainer {
 
     @Inject
