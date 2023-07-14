@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -20,6 +21,7 @@ import work.lclpnet.mplugins.di.MPluginsComponent;
 import work.lclpnet.mplugins.di.MPluginsModule;
 import work.lclpnet.mplugins.event.PluginLifecycleEvents;
 import work.lclpnet.mplugins.ext.MPluginLib;
+import work.lclpnet.mplugins.ext.MPluginsInit;
 
 public class MPlugins implements ModInitializer, MPluginsAPI {
 
@@ -51,6 +53,13 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 		configManager.setPluginFrame(pluginFrame = component.pluginFrame());
 
 		registerEvents();
+
+		// invoke MPluginsInit entrypoint stage
+		var containers = FabricLoader.getInstance().getEntrypointContainers("mplugins", MPluginsInit.class);
+
+		for (var container : containers) {
+			container.getEntrypoint().beforeBootstrap();
+		}
 
 		pluginFrame.init();
 	}
