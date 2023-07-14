@@ -8,10 +8,12 @@ import work.lclpnet.plugin.load.LoadablePlugin;
 import work.lclpnet.plugin.load.LoadedPlugin;
 import work.lclpnet.plugin.load.PluginLoadException;
 
+import javax.inject.Inject;
 import java.util.HashSet;
 
 public class FabricPluginContainer extends DistinctPluginContainer {
 
+    @Inject
     public FabricPluginContainer(Logger logger) {
         super(logger);
     }

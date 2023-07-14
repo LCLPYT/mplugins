@@ -11,7 +11,8 @@ import java.util.Set;
 @Singleton
 @Component(modules = {
         MPluginsModule.class,
-        CommandsModule.class
+        MPluginsCommandModule.class,
+        PluginFrameModule.class
 })
 public interface MPluginsComponent {
 

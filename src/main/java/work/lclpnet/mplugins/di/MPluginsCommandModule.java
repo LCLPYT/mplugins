@@ -6,7 +6,7 @@ import dagger.multibindings.IntoSet;
 import work.lclpnet.mplugins.cmd.*;
 
 @Module
-interface CommandsModule {
+interface MPluginsCommandModule {
 
     @Binds @IntoSet
     MPluginsCommand bindLoadCommand(LoadCommand impl);
