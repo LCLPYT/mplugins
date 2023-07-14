@@ -5,24 +5,33 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.plugin.PluginManager;
 import work.lclpnet.plugin.load.LoadedPlugin;
 import work.lclpnet.plugin.load.PluginLoadException;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import java.nio.file.Path;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class LoadCommand {
+public class LoadCommand implements MPluginsCommand {
 
     private final PluginManager pluginManager;
+    private final Provider<Config> configProvider;
 
-    public LoadCommand(PluginManager pluginManager) {
+    @Inject
+    public LoadCommand(PluginManager pluginManager, Provider<Config> configProvider) {
         this.pluginManager = pluginManager;
+        this.configProvider = configProvider;
     }
 
+    @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        if (!configProvider.get().enableLoadCommand) return;
+
         dispatcher.register(literal("loadPlugin")
                 .requires(s -> s.hasPermissionLevel(4))
                 .then(argument("source", StringArgumentType.greedyString())

@@ -8,16 +8,20 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import work.lclpnet.plugin.PluginManager;
 
+import javax.inject.Inject;
+
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class PluginsCommand {
+public class PluginsCommand implements MPluginsCommand {
 
     private final PluginManager pluginManager;
 
+    @Inject
     public PluginsCommand(PluginManager pluginManager) {
         this.pluginManager = pluginManager;
     }
 
+    @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(command("plugins"));
         dispatcher.register(command("pl"));

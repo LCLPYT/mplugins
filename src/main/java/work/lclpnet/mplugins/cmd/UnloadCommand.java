@@ -5,20 +5,30 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.plugin.PluginManager;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class UnloadCommand {
+public class UnloadCommand implements MPluginsCommand {
 
     private final PluginManager pluginManager;
+    private final Provider<Config> configProvider;
 
-    public UnloadCommand(PluginManager pluginManager) {
+    @Inject
+    public UnloadCommand(PluginManager pluginManager, Provider<Config> configProvider) {
         this.pluginManager = pluginManager;
+        this.configProvider = configProvider;
     }
 
+    @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        if (!configProvider.get().enableUnloadCommand) return;
+
         dispatcher.register(literal("unloadPlugin")
                 .requires(s -> s.hasPermissionLevel(4))
                 .then(argument("plugin", StringArgumentType.string())

@@ -8,17 +8,21 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import work.lclpnet.plugin.PluginManager;
 
+import javax.inject.Inject;
+
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class ReloadCommand {
+public class ReloadCommand implements MPluginsCommand {
 
     private final PluginManager pluginManager;
 
+    @Inject
     public ReloadCommand(PluginManager pluginManager) {
         this.pluginManager = pluginManager;
     }
 
+    @Override
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(node("reloadPlugins"));
         dispatcher.register(node("rl"));

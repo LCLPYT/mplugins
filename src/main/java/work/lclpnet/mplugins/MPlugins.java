@@ -11,14 +11,15 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import work.lclpnet.mplugins.cmd.*;
+import work.lclpnet.mplugins.cmd.MPluginsCommand;
+import work.lclpnet.mplugins.cmd.PluginSuggestions;
 import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.mplugins.config.ConfigManager;
+import work.lclpnet.mplugins.di.DaggerMPluginsComponent;
+import work.lclpnet.mplugins.di.MPluginsComponent;
+import work.lclpnet.mplugins.di.MPluginsModule;
 import work.lclpnet.mplugins.event.PluginLifecycleEvents;
 import work.lclpnet.mplugins.ext.MPluginLib;
-
-import java.nio.file.Path;
-import java.util.Optional;
 
 public class MPlugins implements ModInitializer, MPluginsAPI {
 
@@ -27,8 +28,9 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 	private static final Object mutex = new Object();
 	private static MPlugins instance = null;
 
+	private MPluginsComponent component = null;
 	private PluginFrame pluginFrame = null;
-	private final ConfigManager configManager = new ConfigManager(LOGGER);
+	private ConfigManager configManager = null;
 	private volatile boolean worldReady = false;
 	private MinecraftServer server = null;
 
@@ -39,9 +41,21 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 			instance = this;
 		}
 
-		configManager.loadConfig();
-		configManager.setPluginFrame(pluginFrame = createPluginFrame());
+		component = DaggerMPluginsComponent.builder()
+				.mPluginsModule(new MPluginsModule(LOGGER))
+				.build();
 
+		configManager = component.configManager();
+
+		configManager.loadConfig();
+		configManager.setPluginFrame(pluginFrame = component.pluginFrame());
+
+		registerEvents();
+
+		pluginFrame.init();
+	}
+
+	private void registerEvents() {
 		// update server references
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			synchronized (mutex) {
@@ -59,8 +73,6 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 		PluginLifecycleEvents.LOADED.register(MPluginLib::notifyWorldReady);
 		PluginLifecycleEvents.UNLOADING.register(MPluginLib::notifyWorldUnready);
 
-		pluginFrame.init();
-
 		CommandRegistrationCallback.EVENT.register(this::registerCommands);
 	}
 
@@ -70,25 +82,9 @@ public class MPlugins implements ModInitializer, MPluginsAPI {
 
 		PluginSuggestions.init(pluginFrame);
 
-		final var pluginManager = pluginFrame.getPluginManager();
-
-		new PluginsCommand(pluginManager).register(dispatcher);
-		new ReloadCommand(pluginManager).register(dispatcher);
-
-		Config config = getConfig();
-		if (config.enableLoadCommand) new LoadCommand(pluginManager).register(dispatcher);
-		if (config.enableUnloadCommand) new UnloadCommand(pluginManager).register(dispatcher);
-	}
-
-	private PluginFrame createPluginFrame() {
-		Config config = getConfig();
-
-		final var pluginDir = Optional.ofNullable(config.pluginDirectory)
-				.orElse(Path.of("plugins"));
-
-		final var options = new PluginFrame.Options(pluginDir, config.loadPluginsOnStartup);
-
-		return new PluginFrame(options, LOGGER);
+		for (MPluginsCommand cmd : component.commands()) {
+			cmd.register(dispatcher);
+		}
 	}
 
 	@Override

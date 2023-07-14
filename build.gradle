@@ -6,7 +6,7 @@ plugins {
     id 'java'
 	id 'fabric-loom' version '1.2.7'
 	id 'maven-publish'
-	id 'gradle-build-utils' version '1.5.2'
+	id 'gradle-build-utils' version '1.5.3'
 }
 
 Properties props = buildUtils.loadProperties('publish.properties')
@@ -61,15 +61,28 @@ dependencies {
     /* other Java dependencies */
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-    implementation 'org.json:json:20230227'
-    include 'org.json:json:20230227'
+    'org.json:json:20230227'.with {
+        implementation it
+        include it
+    }
 
-    implementation "work.lclpnet:json-config4j:${project.config_version}"
-    include "work.lclpnet:json-config4j:${project.config_version}"
+    "work.lclpnet:json-config4j:${project.config_version}".with {
+        implementation it
+        include it
+    }
 
     // make plugins4j visible for consumers at compile time
-    api "work.lclpnet:plugins4j:${project.plugins4j_version}"
-    include "work.lclpnet:plugins4j:${project.plugins4j_version}"
+    "work.lclpnet:plugins4j:${project.plugins4j_version}".with {
+        api it
+        include it
+    }
+
+    'com.google.dagger:dagger:2.46.1'.with {
+        implementation it
+        include it
+    }
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.46.1'
+    include 'javax.inject:javax.inject:1'
 
     /* testing */
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
@@ -189,5 +202,5 @@ publishing {
         }
     }
 
-    buildUtils.setupPublishRepository(it, props)
+    buildUtils.setupPublishRepository(repositories, props)
 }

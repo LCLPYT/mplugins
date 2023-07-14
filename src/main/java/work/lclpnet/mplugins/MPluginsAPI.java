@@ -1,13 +1,11 @@
 package work.lclpnet.mplugins;
 
 import net.minecraft.server.MinecraftServer;
-import work.lclpnet.mplugins.config.Config;
+import work.lclpnet.mplugins.config.ConfigAccess;
 
 import javax.annotation.Nullable;
 
-public interface MPluginsAPI {
-
-    Config getConfig();
+public interface MPluginsAPI extends ConfigAccess {
 
     PluginFrame getPluginFrame();
 

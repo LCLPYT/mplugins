@@ -15,6 +15,8 @@ import work.lclpnet.plugin.discover.PluginDiscoveryService;
 import work.lclpnet.plugin.load.DefaultClassLoaderContainer;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -25,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Singleton
 public class PluginFrame {
 
     private final Options options;
@@ -36,6 +39,7 @@ public class PluginFrame {
     @Nullable
     private PluginDiscoveryService discoveryService = null;
 
+    @Inject
     public PluginFrame(Options options, Logger logger) {
         this.options = options;
         this.logger = logger;

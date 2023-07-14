@@ -1,31 +1,31 @@
 package work.lclpnet.mplugins.config;
 
-import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import work.lclpnet.config.json.ConfigHandler;
 import work.lclpnet.config.json.FileConfigSerializer;
-import work.lclpnet.mplugins.MPlugins;
 import work.lclpnet.mplugins.PluginFrame;
 import work.lclpnet.mplugins.util.FileSystemWatcher;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ConfigManager {
-
-    private static final Path CONFIG_FILE = FabricLoader.getInstance().getConfigDir()
-            .resolve(MPlugins.MOD_ID).resolve("config.json");
+@Singleton
+public class ConfigManager implements ConfigAccess {
 
     private final ConfigHandler<Config> configHandler;
     private final AtomicReference<PluginFrame> pluginFrame = new AtomicReference<>(null);
     private final Logger logger;
     private FileSystemWatcher fsWatcher = null;
 
-    public ConfigManager(Logger logger) {
+    @Inject
+    public ConfigManager(@Named("configPath") Path configPath, Logger logger) {
         this.logger = logger;
 
         var serializer = new FileConfigSerializer<>(Config.FACTORY, logger);
-        this.configHandler = new ConfigHandler<>(CONFIG_FILE, serializer, logger);
+        this.configHandler = new ConfigHandler<>(configPath, serializer, logger);
     }
 
     public void loadConfig() {
@@ -44,6 +44,7 @@ public class ConfigManager {
         }
     }
 
+    @Override
     public Config getConfig() {
         return configHandler.getConfig();
     }
