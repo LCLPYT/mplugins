@@ -30,10 +30,23 @@ public abstract class MinecraftServerMixin {
 
         var pluginManager = api.getPluginFrame().getPluginManager();
         pluginManager.getPlugins().forEach(MPluginLib::notifyWorldUnready);
+    }
 
+    @Inject(
+            method = "shutdown",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/MinecraftServer$ResourceManagerHolder;close()V",
+                    shift = At.Shift.BEFORE
+            )
+    )
+    private void mplugins$beforeResourceClose(CallbackInfo ci) {
         // plugins should only be unloaded on dedicated servers here. on clients unload at client shutdown.
-        if (this.isDedicated()) {
-            pluginManager.shutdown();
-        }
+        if (!this.isDedicated()) return;
+
+        var api = MPluginsAPI.get();
+        var pluginManager = api.getPluginFrame().getPluginManager();
+
+        pluginManager.shutdown();
     }
 }
