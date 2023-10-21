@@ -10,9 +10,9 @@ import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.mplugins.config.KibuDevConfig;
 import work.lclpnet.mplugins.ext.lib.FabricJsonManifestLoader;
 import work.lclpnet.mplugins.ext.lib.FabricPluginContainer;
+import work.lclpnet.mplugins.ext.lib.FabricPluginManager;
 import work.lclpnet.plugin.PluginContainer;
 import work.lclpnet.plugin.PluginManager;
-import work.lclpnet.plugin.SimplePluginManager;
 import work.lclpnet.plugin.bootstrap.OrderedPluginBootstrap;
 import work.lclpnet.plugin.bootstrap.PluginBootstrap;
 import work.lclpnet.plugin.discover.ClasspathPluginDiscoveryService;
@@ -61,7 +61,7 @@ public abstract class PluginFrameModule {
     @Singleton
     @Provides
     static PluginManager providePluginManager(PluginDiscoveryService discoveryService, PluginContainer container) {
-        return new SimplePluginManager(discoveryService, container);
+        return new FabricPluginManager(discoveryService, container);
     }
 
     @Singleton

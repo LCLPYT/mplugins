@@ -4,6 +4,8 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import work.lclpnet.plugin.load.LoadedPlugin;
 
+import java.util.Set;
+
 public class PluginLifecycleEvents {
 
     public static final Event<Loading> LOADING = EventFactory.createArrayBacked(Loading.class,
@@ -34,6 +36,20 @@ public class PluginLifecycleEvents {
                 }
             });
 
+    public static final Event<Reloading> RELOADING = EventFactory.createArrayBacked(Reloading.class,
+            listeners -> (plugins) -> {
+                for (var listener : listeners) {
+                    listener.reloading(plugins);
+                }
+            });
+
+    public static final Event<Reloaded> RELOADED = EventFactory.createArrayBacked(Reloaded.class,
+            listeners -> (plugins) -> {
+                for (var listener : listeners) {
+                    listener.reloaded(plugins);
+                }
+            });
+
     public static final Event<WorldStateChange> WORLD_STATE_CHANGED = EventFactory.createArrayBacked(WorldStateChange.class,
             listeners -> (ready) -> {
                 for (var listener : listeners) {
@@ -59,5 +75,13 @@ public class PluginLifecycleEvents {
 
     public interface WorldStateChange {
         void onWorldStateChanged(boolean ready);
+    }
+
+    public interface Reloading {
+        void reloading(Set<? extends LoadedPlugin> reloading);
+    }
+
+    public interface Reloaded {
+        void reloaded(Set<? extends LoadedPlugin> reloaded);
     }
 }
