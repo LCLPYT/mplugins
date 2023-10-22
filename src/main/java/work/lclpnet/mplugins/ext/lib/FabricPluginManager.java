@@ -1,6 +1,7 @@
 package work.lclpnet.mplugins.ext.lib;
 
 import work.lclpnet.mplugins.event.PluginLifecycleEvents;
+import work.lclpnet.mplugins.event.PluginShutdownEvents;
 import work.lclpnet.plugin.PluginContainer;
 import work.lclpnet.plugin.SimplePluginManager;
 import work.lclpnet.plugin.discover.PluginDiscoveryService;
@@ -21,5 +22,14 @@ public class FabricPluginManager extends SimplePluginManager {
         super.reloadPlugins(loaded);
 
         PluginLifecycleEvents.RELOADED.invoker().reloaded(loaded);
+    }
+
+    @Override
+    public void shutdown() {
+        PluginShutdownEvents.BEGIN.invoker().onShuttingDown(this);
+
+        super.shutdown();
+
+        PluginShutdownEvents.COMPLETE.invoker().onShutdown(this);
     }
 }
