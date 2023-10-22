@@ -5,10 +5,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import org.slf4j.Logger;
 import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.plugin.PluginManager;
 import work.lclpnet.plugin.load.LoadedPlugin;
-import work.lclpnet.plugin.load.PluginLoadException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -21,11 +21,13 @@ public class LoadCommand implements MPluginsCommand {
 
     private final PluginManager pluginManager;
     private final Provider<Config> configProvider;
+    private final Logger logger;
 
     @Inject
-    public LoadCommand(PluginManager pluginManager, Provider<Config> configProvider) {
+    public LoadCommand(PluginManager pluginManager, Provider<Config> configProvider, Logger logger) {
         this.pluginManager = pluginManager;
         this.configProvider = configProvider;
+        this.logger = logger;
     }
 
     @Override
@@ -50,7 +52,8 @@ public class LoadCommand implements MPluginsCommand {
         LoadedPlugin loaded;
         try {
             loaded = pluginManager.loadPlugin(path).orElse(null);
-        } catch (PluginLoadException e) {
+        } catch (Throwable e) {
+            logger.error("Failed to load plugin from '{}'", path, e);
             src.sendError(Text.literal("Could not load plugin from '%s'.".formatted(path)));
             return -1;
         }

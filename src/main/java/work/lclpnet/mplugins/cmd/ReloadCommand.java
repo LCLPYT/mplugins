@@ -4,8 +4,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.command.CommandException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import org.slf4j.Logger;
 import work.lclpnet.plugin.PluginManager;
 
 import javax.inject.Inject;
@@ -16,10 +18,12 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class ReloadCommand implements MPluginsCommand {
 
     private final PluginManager pluginManager;
+    private final Logger logger;
 
     @Inject
-    public ReloadCommand(PluginManager pluginManager) {
+    public ReloadCommand(PluginManager pluginManager, Logger logger) {
         this.pluginManager = pluginManager;
+        this.logger = logger;
     }
 
     @Override
@@ -48,7 +52,12 @@ public class ReloadCommand implements MPluginsCommand {
 
         src.sendMessage(Text.literal("Reloading plugin '%s'...".formatted(id)));
 
-        pluginManager.reloadPlugin(plugin);
+        try {
+            pluginManager.reloadPlugin(plugin);
+        } catch (Throwable throwable) {
+            logger.error("Failed to reload plugin '{}'", id, throwable);
+            throw new CommandException(Text.literal("Failed to reload plugin '%s'".formatted(id)));
+        }
 
         src.sendMessage(Text.literal("Plugin '%s' reloaded.".formatted(id)));
 
@@ -61,7 +70,12 @@ public class ReloadCommand implements MPluginsCommand {
         ServerCommandSource src = ctx.getSource();
         src.sendMessage(Text.literal("Reloading plugins..."));
 
-        pluginManager.reloadPlugins(plugins);
+        try {
+            pluginManager.reloadPlugins(plugins);
+        } catch (Throwable t) {
+            logger.error("Failed to reload plugins", t);
+            throw new CommandException(Text.literal("Failed to reload plugins"));
+        }
 
         src.sendMessage(Text.literal("Plugins reloaded."));
 

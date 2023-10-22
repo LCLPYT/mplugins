@@ -3,8 +3,10 @@ package work.lclpnet.mplugins.cmd;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.command.CommandException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import org.slf4j.Logger;
 import work.lclpnet.mplugins.config.Config;
 import work.lclpnet.plugin.PluginManager;
 
@@ -18,11 +20,13 @@ public class UnloadCommand implements MPluginsCommand {
 
     private final PluginManager pluginManager;
     private final Provider<Config> configProvider;
+    private final Logger logger;
 
     @Inject
-    public UnloadCommand(PluginManager pluginManager, Provider<Config> configProvider) {
+    public UnloadCommand(PluginManager pluginManager, Provider<Config> configProvider, Logger logger) {
         this.pluginManager = pluginManager;
         this.configProvider = configProvider;
+        this.logger = logger;
     }
 
     @Override
@@ -47,7 +51,12 @@ public class UnloadCommand implements MPluginsCommand {
 
         src.sendMessage(Text.literal("Unloading plugin '%s'...".formatted(id)));
 
-        pluginManager.unloadPlugin(plugin);
+        try {
+            pluginManager.unloadPlugin(plugin);
+        } catch (Throwable t) {
+            logger.error("Failed to unload plugin '{}'", id, t);
+            throw new CommandException(Text.literal("Failed to unload plugin '%s'".formatted(id)));
+        }
 
         src.sendMessage(Text.literal("Plugin '%s' unloaded.".formatted(id)));
 
