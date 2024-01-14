@@ -4,19 +4,19 @@ import java.nio.file.Files
 
 plugins {
     id 'java'
-	id 'fabric-loom' version '1.2.7'
+	id 'fabric-loom' version '1.5-SNAPSHOT'
 	id 'maven-publish'
-	id 'gradle-build-utils' version '1.5.3'
+	id 'gradle-build-utils' version '1.7.0'
 }
 
 Properties props = buildUtils.loadProperties('publish.properties')
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-archivesBaseName = project.archives_base_name
 version = buildUtils.gitVersion()
 group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
 
 sourceSets {
     testPlugin {
@@ -61,26 +61,14 @@ dependencies {
     /* other Java dependencies */
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-    'org.json:json:20230227'.with {
-        implementation it
-        include it
-    }
+    include(implementation('org.json:json:20230227'))
 
-    "work.lclpnet:json-config4j:${project.config_version}".with {
-        implementation it
-        include it
-    }
+    include(implementation("work.lclpnet:json-config4j:${project.config_version}"))
 
     // make plugins4j visible for consumers at compile time
-    "work.lclpnet:plugins4j:${project.plugins4j_version}".with {
-        api it
-        include it
-    }
+    include(api("work.lclpnet:plugins4j:${project.plugins4j_version}"))
 
-    'com.google.dagger:dagger:2.46.1'.with {
-        implementation it
-        include it
-    }
+    include(implementation('com.google.dagger:dagger:2.46.1'))
     annotationProcessor 'com.google.dagger:dagger-compiler:2.46.1'
     include 'javax.inject:javax.inject:1'
 
@@ -107,12 +95,15 @@ processTestPluginResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release.convention(17)
+	it.options.release.set(17)
 }
 
 java {
 	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 	withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 test {
