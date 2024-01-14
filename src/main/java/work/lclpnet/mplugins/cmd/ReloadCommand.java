@@ -4,7 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.command.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
@@ -17,6 +19,10 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class ReloadCommand implements MPluginsCommand {
 
+    private static final DynamicCommandExceptionType ERROR_RELOAD_SINGLE = new DynamicCommandExceptionType(
+            id -> Text.literal("Failed to reload plugin '%s'".formatted(id)));
+    private static final SimpleCommandExceptionType ERROR_RELOAD_MULTI = new SimpleCommandExceptionType(
+            Text.literal("Failed to reload plugins"));
     private final PluginManager pluginManager;
     private final Logger logger;
 
@@ -42,7 +48,7 @@ public class ReloadCommand implements MPluginsCommand {
                 );
     }
 
-    private Integer reloadPlugin(CommandContext<ServerCommandSource> ctx) {
+    private Integer reloadPlugin(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         var optPlugin = PluginCommandUtils.getLoadedPluginArgument(ctx, pluginManager);
         if (optPlugin.isEmpty()) return -1;
 
@@ -56,7 +62,7 @@ public class ReloadCommand implements MPluginsCommand {
             pluginManager.reloadPlugin(plugin);
         } catch (Throwable throwable) {
             logger.error("Failed to reload plugin '{}'", id, throwable);
-            throw new CommandException(Text.literal("Failed to reload plugin '%s'".formatted(id)));
+            throw ERROR_RELOAD_SINGLE.create(id);
         }
 
         src.sendMessage(Text.literal("Plugin '%s' reloaded.".formatted(id)));
@@ -64,7 +70,7 @@ public class ReloadCommand implements MPluginsCommand {
         return 1;
     }
 
-    private Integer reloadPlugins(CommandContext<ServerCommandSource> ctx) {
+    private Integer reloadPlugins(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         var plugins = pluginManager.getPlugins();
 
         ServerCommandSource src = ctx.getSource();
@@ -74,7 +80,7 @@ public class ReloadCommand implements MPluginsCommand {
             pluginManager.reloadPlugins(plugins);
         } catch (Throwable t) {
             logger.error("Failed to reload plugins", t);
-            throw new CommandException(Text.literal("Failed to reload plugins"));
+            throw ERROR_RELOAD_MULTI.create();
         }
 
         src.sendMessage(Text.literal("Plugins reloaded."));

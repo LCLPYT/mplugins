@@ -3,7 +3,8 @@ package work.lclpnet.mplugins.cmd;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.command.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
@@ -18,6 +19,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class UnloadCommand implements MPluginsCommand {
 
+    private static final DynamicCommandExceptionType ERROR_UNLOAD = new DynamicCommandExceptionType(
+            id -> Text.literal("Failed to unload plugin '%s'".formatted(id)));
     private final PluginManager pluginManager;
     private final Provider<Config> configProvider;
     private final Logger logger;
@@ -41,7 +44,7 @@ public class UnloadCommand implements MPluginsCommand {
                 ));
     }
 
-    private Integer unloadPlugin(CommandContext<ServerCommandSource> ctx) {
+    private Integer unloadPlugin(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         var optPlugin = PluginCommandUtils.getLoadedPluginArgument(ctx, pluginManager);
         if (optPlugin.isEmpty()) return -1;
 
@@ -55,7 +58,7 @@ public class UnloadCommand implements MPluginsCommand {
             pluginManager.unloadPlugin(plugin);
         } catch (Throwable t) {
             logger.error("Failed to unload plugin '{}'", id, t);
-            throw new CommandException(Text.literal("Failed to unload plugin '%s'".formatted(id)));
+            throw ERROR_UNLOAD.create(id);
         }
 
         src.sendMessage(Text.literal("Plugin '%s' unloaded.".formatted(id)));
