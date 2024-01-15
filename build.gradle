@@ -183,8 +183,7 @@ publishing {
         mavenJava(MavenPublication) {
             artifactId = project.archives_base_name
 
-            artifact remapJar
-            artifact remapSourcesJar
+            from components.java
 
             pom {
                 name = 'MPlugins'
